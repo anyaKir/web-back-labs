@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, redirect
+from flask import Flask, url_for, request, redirect, render_template
 import datetime
 app = Flask(__name__)
 
@@ -39,15 +39,9 @@ def author():
 @app.route('/image')
 def image():
     path = url_for("static", filename="мем.PNG")
-    return'''
-<!doctype html>
-<html>
-    <body>
-        <h1>Мем</h1>
-        <img src = "''' + path + '''">
-    </body>
-</html>
-'''
+    return render_template('image.html', path=path)
+if __name__ == '__main__':
+    app.run(debug=True)
 
 count = 0
 @app.route('/counter')

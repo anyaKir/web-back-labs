@@ -1,0 +1,17 @@
+body {
+    background-image: linear-gradient(to right, rgb(177, 141, 216), rgb(148, 92, 209), rgb(59, 9, 87));
+    color: #333;
+    text-align: center;
+    font-family:'Courier New', Courier, monospace;
+}
+
+h1 {
+    color: #97dfe7;
+}
+
+img {
+    width: 400px;
+    height: auto;
+    border: 3px solid #aad5e8;
+    border-radius: 10px;
+}
