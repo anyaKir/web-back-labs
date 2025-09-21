@@ -15,7 +15,10 @@ def web():
                 <h1>web-сервер на flask</h1>
                 <a href = "/author">author</a>
             </body>    
-        </html>"""
+        </html>""", 200, {
+             "X-Server": 'sample',
+             'Content-Type': 'text/plain; charset=utf-8'
+        }
 
 @app.route("/author")
 def author():
