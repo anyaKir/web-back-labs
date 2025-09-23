@@ -4,7 +4,65 @@ app = Flask(__name__)
 
 @app.errorhandler(404)
 def not_found(err):
-        return "нет такой страницы", 404
+    return '''
+    <!doctype html>
+    <html lang="ru">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>404</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #000000;
+                    color: white;
+                    text-align: center;
+                    padding: 50px;
+                }
+                h1 {
+                    font-size: 50px;
+                    color: white;
+                }
+                p {
+                    font-size: 20px;
+                    color: #555;
+                }
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                }
+                .container img {
+                    max-width: 400px;
+                    margin-top: 30px;
+                }
+                a {
+                    text-decoration: none;
+                    color: white;
+                    font-size: 18px;
+                    margin-top: 20px;
+                    display: inline-block;
+                    padding: 10px 20px;
+                    border: 2px solid purple;
+                    border-radius: 5px;
+                    background-color: #000000;
+                }
+                a:hover {
+                    background-color: white;
+                    color: purple;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>404 - Упс...</h1>
+                <img src="https://i.pinimg.com/736x/d7/88/f0/d788f02acfbfa2c9a83d4f3fa95b3e92.jpg" alt="404 Image">
+                <p>Не переживайте, вы можете вернуться на <a href="/">главную страницу</a></p>
+            </div>
+        </body>
+    </html>
+    ''', 404
 
 @app.route("/lab1/400")
 def error400():
