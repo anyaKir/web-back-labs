@@ -2,11 +2,21 @@ from flask import Flask, url_for, request, redirect, render_template
 import datetime
 app = Flask(__name__)
 
-error_log = []
+error_log = []  
 
 @app.errorhandler(404)
 def not_found(err):
-    return '''
+    from flask import request
+    import datetime
+
+    ip = request.remote_addr
+    url = request.url
+    time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+    error_log.append(f"{time} | IP Пользователя: {ip} | URL пользователя: {url}")
+
+    return f'''
     <!doctype html>
     <html lang="ru">
         <head>
@@ -14,32 +24,32 @@ def not_found(err):
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>404</title>
             <style>
-                body {
+                body {{
                     font-family: Arial, sans-serif;
                     background-color: #000000;
                     color: white;
                     text-align: center;
                     padding: 50px;
-                }
-                h1 {
+                }}
+                h1 {{
                     font-size: 50px;
                     color: white;
-                }
-                p {
+                }}
+                p {{
                     font-size: 20px;
-                    color: #555;
-                }
-                .container {
+                    color: #bbb;
+                }}
+                .container {{
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
-                }
-                .container img {
+                }}
+                .container img {{
                     max-width: 400px;
                     margin-top: 30px;
-                }
-                a {
+                }}
+                a {{
                     text-decoration: none;
                     color: white;
                     font-size: 18px;
@@ -49,18 +59,37 @@ def not_found(err):
                     border: 2px solid purple;
                     border-radius: 5px;
                     background-color: #000000;
-                }
-                a:hover {
+                }}
+                a:hover {{
                     background-color: white;
                     color: purple;
-                }
+                }}
+                .log {{
+                    text-align: left;
+                    background: #111;
+                    padding: 15px;
+                    border-radius: 8px;
+                    margin-top: 30px;
+                    font-size: 14px;
+                    max-width: 900px;
+                    margin-left: auto;
+                    margin-right: auto;
+                }}
             </style>
         </head>
         <body>
             <div class="container">
                 <h1>404 - Упс...</h1>
                 <img src="https://i.pinimg.com/736x/d7/88/f0/d788f02acfbfa2c9a83d4f3fa95b3e92.jpg" alt="404 Image">
+                <p><b>Ваш IP:</b> {ip}</p>
+                <p><b>Дата и время доступа:</b> {time}</p>
+                <p><b>Запрошенный адрес:</b> {url}</p>
                 <p>Не переживайте, вы можете вернуться на <a href="/">главную страницу</a></p>
+
+                <h2>Полный лог обращений с ошибкой 404</h2>
+                <div class="log">
+                    {"<br>".join(error_log)}
+                </div>
             </div>
         </body>
     </html>
