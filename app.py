@@ -64,6 +64,44 @@ def not_found(err):
     </html>
     ''', 404
 
+@app.errorhandler(500)
+def internal_error(err):
+    return '''
+    <!doctype html>
+    <html lang="ru">
+        <head>
+            <meta charset="UTF-8">
+            <title>Ошибка 500</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    background-color: #2b2b2b;
+                    color: white;
+                    text-align: center;
+                    padding: 50px;
+                }
+                h1 { font-size: 50px; color: red; }
+                p { font-size: 22px; }
+                a {
+                    color: white;
+                    text-decoration: underline;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>500 — Внутренняя ошибка сервера</h1>
+            <p>Произошла ошибка при обработке запроса.<br>
+               Попробуйте позже или вернитесь на <a href="/">главную страницу</a>.
+            </p>
+        </body>
+    </html>
+    ''', 500
+
+@app.route("/lab1/500")
+def error500():
+    x = 1 / 0
+    return str(x)
+
 @app.route("/lab1/400")
 def error400():
     return "<h1>400 — Недопустимый запрос (Bad Request)</h1>", 400
