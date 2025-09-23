@@ -2,6 +2,8 @@ from flask import Flask, url_for, request, redirect, render_template
 import datetime
 app = Flask(__name__)
 
+error_log = []
+
 @app.errorhandler(404)
 def not_found(err):
     return '''
@@ -153,6 +155,7 @@ def lab1():
             <li><a href="/lab1/405">/lab1/405</a></li>
             <li><a href="/lab1/418">/lab1/418</a></li>
             <li><a href="/lab1/500">/lab1/500</a></li>
+            <li><a href="/404">/lab1/404</a></li>
             <li><a href="/lab1/web">/lab1/web</a></li>
             <li><a href="/lab1/author">/lab1/author</a></li>
             <li><a href="/lab1/image">/lab1/image</a></li>
