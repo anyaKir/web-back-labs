@@ -199,9 +199,12 @@ def author():
 @app.route('/lab1/image')
 def image():
     path = url_for("static", filename="мем.PNG")
-    return render_template('image.html', path=path)
-if __name__ == '__main__':
-    app.run(debug=True)
+    html = render_template('image.html', path=path)
+    return html, 200, {
+        "Content-Language": "ru",         
+        "X-Student-Name": "Kirdyachkina Anna", 
+        "X-Lab-Number": "1"                  
+    }
 
 count = 0
 @app.route('/lab1/counter')
