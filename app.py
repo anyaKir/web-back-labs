@@ -7,7 +7,6 @@ error_log = []
 @app.errorhandler(404)
 def not_found(err):
     from flask import request
-    import datetime
 
     ip = request.remote_addr
     url = request.url
