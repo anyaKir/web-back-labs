@@ -6,8 +6,6 @@ error_log = []
 
 @app.errorhandler(404)
 def not_found(err):
-    from flask import request
-    import datetime
 
     ip = request.remote_addr
     url = request.url
@@ -21,7 +19,6 @@ def not_found(err):
     <html lang="ru">
         <head>
             <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>404</title>
             <style>
                 body {{
@@ -208,7 +205,7 @@ def index():
     <body>
         <h1>НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных</h1>
         <ul>
-            <li><a href="/lab1/web">Первая лабораторная</a></li>
+            <li><a href="/lab1">Первая лабораторная</a></li>
         </ul>
         <hr>
         <footer>
@@ -227,7 +224,7 @@ def web():
             </body>    
         </html>""", 200, {
              "X-Server": 'sample',
-             'Content-Type': 'text/html; charset=utf-8'
+             'Content-Type': 'text/plain; charset=utf-8'
         }
 
 @app.route("/lab1/author")
