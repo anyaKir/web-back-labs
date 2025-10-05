@@ -241,7 +241,7 @@ def author():
                 <p>Факультет: """ + faculty + """</p>
                 <a href = "/lab1/web">web</a>
             </body>
-        <html>"""
+        </html>"""
 
 @app.route('/lab1/image')
 def image():
@@ -287,7 +287,7 @@ def reset():
         <body>
             <h1>Счетчик обнулен</h1>
             <a href="/lab1/counter">Вернуться к счетчику</a>
-        <body>
+        </body>
     </html>
 '''
 
@@ -345,5 +345,14 @@ def example():
     lab_number = 'Лабораторная работа 2'
     group = 'ФБИ-32'
     course = 'Курс 3'
-    return render_template('example.html', name=name, lab_number=lab_number, group=group, course=course)
-    
+    fruits = [
+        {'name': 'яблоки', 'price': 100},
+        {'name': 'груши', 'price': 120},
+        {'name': 'апельсины', 'price': 80},
+        {'name': 'мандарины', 'price': 95},
+        {'name': 'манго', 'price': 321}
+    ]
+    return render_template('example.html', name=name, lab_number=lab_number, group=group, course=course, fruits=fruits)
+
+if __name__ == '__main__':
+    app.run(debug=True)
