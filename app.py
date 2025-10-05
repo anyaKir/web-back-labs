@@ -1,4 +1,4 @@
-from flask import Flask, url_for, request, redirect, render_template, abort, render_template
+from flask import Flask, url_for, request, redirect, render_template, abort
 import datetime
 app = Flask(__name__)
 
@@ -343,5 +343,7 @@ def add_flower(name):
 def example():
     name = 'Анна Кирдячкина'
     lab_number = 'Лабораторная работа 2'
-    return render_template('example.html', name=name, lab_number=lab_number)
+    group = 'ФБИ-32'
+    course = 'Курс 3'
+    return render_template('example.html', name=name, lab_number=lab_number, group=group, course=course)
     

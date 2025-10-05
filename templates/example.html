@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кирдячкина Анна. {{ lab_number }}</title>
+    <title>
+        {% if name %}
+            {{ name }}
+        {% else %}
+            Анонимус
+        {% endif %}
+        . {{ lab_number }} 
+    </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 </head>
 <body>
@@ -19,7 +26,24 @@
     </main>
 
     <footer>
-        &copy; {{ name }}, ФБИ-32, 3 курс, 2025
+        &copy; 
+        {% if name %}
+            {{ name }},
+        {% else %}
+            Анонимус,
+        {% endif %}
+
+        {% if group %}
+            {{ group }},
+        {% else %}
+            Группа не указана,
+        {% endif %}
+
+        {% if course %}
+            {{ course }},
+        {% else %}
+            Курс не указан,
+        {% endif %}
     </footer>   
 </body>
 </html>

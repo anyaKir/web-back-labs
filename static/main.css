@@ -10,13 +10,13 @@ main {
 header {
     margin-bottom: 30px;
     padding: 20px;
-    background-color: rgb(170, 138, 218);
+    background-color: rgb(195, 173, 227);
 }
 
 footer {
     margin-top: 20px;
     padding: 10px;
-    background-color: rgb(170, 138, 218);
+    background-color: rgb(195, 173, 227);
     text-align: right;
     position: fixed;
     bottom: 0;
