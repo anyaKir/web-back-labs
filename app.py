@@ -354,5 +354,8 @@ def example():
     ]
     return render_template('example.html', name=name, lab_number=lab_number, group=group, course=course, fruits=fruits)
 
+@app.route('/lab2/')
+def lab2():
+    return render_template('lab2.html')
 if __name__ == '__main__':
     app.run(debug=True)
