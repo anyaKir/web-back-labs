@@ -321,23 +321,28 @@ flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашк
 def flowers(flower_id):
     if flower_id >= len(flower_list):
         abort(404)
-    else:
-        return "цветок: " + flower_list[flower_id]
+    flower = flower_list[flower_id]
+    return render_template('flower.html', flower=flower, flower_id=flower_id)
+
+@app.route("/lab2/clear_flowers")
+def clear_flowers():
+    global flower_list
+    flower_list.clear()
+    return redirect(url_for('all_flowers'))
+
+@app.route('/lab2/all_flowers')
+def all_flowers():
+    return render_template('all_flowers.html', flower_list=flower_list)
 
 @app.route('/lab2/add_flower/<name>')
 def add_flower(name):
     flower_list.append(name)
-    return f'''
-<!doctype html>
-<html>
-    <body>
-    <h1>Добавлен новый цветок</h1>
-    <p>Название нового цветка: {name} </p>
-    <p>Всего цветов: {len(flower_list)}</p>
-    <p>Полный список: {flower_list}</p>
-    </body>
-</html>
-'''
+    return render_template('add_flower.html', name=name, flower_list=flower_list)
+
+
+@app.route('/lab2/add_flower/')
+def add_flower_no_name():
+    return render_template('error400.html'), 400
 
 @app.route('/lab2/example')
 def example():

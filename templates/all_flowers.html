@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная 2{% endblock %}
+
+{% block main %}
+<h1>🌼 Список всех цветов</h1>
+<ul>
+    {% for flower in flower_list %}
+        <li>{{ loop.index }}. {{ flower }}</li>
+    {% endfor %}
+</ul>
+
+<p><b>Всего цветов:</b> {{ flower_list | length }}</p>
+<hr>
+<a href="/lab2/add_flower/роза">Добавить "розу"</a><br>
+<a href="/lab2/clear_flowers" style="color:red;">Очистить список</a>
+{% endblock %}
