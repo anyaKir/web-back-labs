@@ -23,3 +23,35 @@ footer {
     left: 0;
     right: 0;
 }
+.calc-results {
+    background: rgba(255,255,255,0.2);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+    padding: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 5px;
+}
+
+.operation {
+    font-weight: bold;
+    min-width: 100px;
+    text-align: left;
+}
+
+.equals {
+    margin: 0 10px;
+}
+
+.examples {
+    margin-top: 20px;
+    font-size: 0.9em;
+    opacity: 0.8;
+}

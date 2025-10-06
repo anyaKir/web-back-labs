@@ -1,15 +1,27 @@
-{% extends "base.html %"}
+{% extends "base.html" %}
 
-{# номер лабораторной работы: #}
 {% block lab %}Лабораторная работа 2{% endblock %}
 
-{# основной контент: #}
 {% block main %}
     <h1>Шаблоны</h1>
     <div>Тема лабораторной - шаблоны. Список сделанных страниц:</div>
     <ol>
+        <li><a href="/lab2/example">Пример</a></li>
+        <li><a href="/lab2/filters">Фильтры</a></li>
         <li>
-            <a href="/lab2/example">example</a>
+            <a href="/lab2/calc/">Калькулятор (по умолчанию 1/1)</a>
+        </li>
+        <li>
+            <a href="/lab2/calc/3/4">Калькулятор (пример 3/4)</a>
+        </li>
+        <li>
+            <a href="/lab2/calc/10">Калькулятор (10/1)</a>
+        </li>
+        <li>
+            <a href="/lab2/flowers/">Все цветы</a>
+        </li>
+        <li>
+            <a href="/lab2/add_flower/роза">Добавить цветок (пример)</a>
         </li>
     </ol>
 {% endblock %}

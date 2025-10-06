@@ -344,6 +344,21 @@ def add_flower(name):
 def add_flower_no_name():
     return render_template('error400.html'), 400
 
+@app.route('/lab2/calc/')
+def calc_default():
+    """Перенаправление на калькулятор с значениями по умолчанию"""
+    return redirect('/lab2/calc/1/1')
+
+@app.route('/lab2/calc/<int:a>')
+def calc_single(a):
+    """Перенаправление на калькулятор с одним числом (второе = 1)"""
+    return redirect(f'/lab2/calc/{a}/1')
+
+@app.route('/lab2/calc/<int:a>/<int:b>')
+def calc(a, b):
+    """Калькулятор с двумя числами"""
+    return render_template('calc.html', a=a, b=b)
+
 @app.route('/lab2/example')
 def example():
     name = 'Анна Кирдячкина'
