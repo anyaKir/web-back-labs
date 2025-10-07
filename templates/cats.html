@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 2{% endblock %}
+
+{% block main %}
+    <style>
+        .cat-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            object-position: top center; /* или bottom center */
+        }
+        .cats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .cats-header {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .cats-stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .cats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        .cat-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .cat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .cat-info {
+            padding: 20px;
+        }
+        .cat-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .cat-breed {
+            color: #e74c3c;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .cat-details {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .cat-description {
+            color: #34495e;
+            line-height: 1.4;
+            font-size: 0.95em;
+        }
+        .back-link {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        .back-link:hover {
+            background: #2980b9;
+        }
+        .text-center {
+            text-align: center;
+        }
+    </style>
+
+    <div class="cats-container">
+        <h1 class="cats-header">🐱 Наши пушистые друзья</h1>
+        
+        <div class="cats-stats">
+            <h2>Всего котиков: {{ cats|length }}</h2>
+            <p>Разных пород, возрастов и характеров!</p>
+        </div>
+
+        <div class="cats-grid">
+            {% for cat in cats %}
+            <div class="cat-card">
+                <img src="{{ url_for('static', filename='cats/' + cat.image) }}" 
+                     alt="{{ cat.name }}" 
+                     class="cat-image">
+                <div class="cat-info">
+                    <div class="cat-name">{{ cat.name }}</div>
+                    <div class="cat-breed">{{ cat.breed }}</div>
+                    <div class="cat-details">
+                        Возраст: {{ cat.age }} года • Окрас: {{ cat.color }}
+                    </div>
+                    <div class="cat-description">{{ cat.description }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center">
+            <a href="/lab2" class="back-link">← Назад к лабораторной работе 2</a>
+        </div>
+    </div>
+{% endblock %}
