@@ -1,8 +1,7 @@
 {% extends "base.html" %}
 
-{% block lab %}Лабораторная 2{% endblock %}
-
 {% block main %}
-<h1 style="color:red;">Ошибка 400 — вы не задали имя цветка</h1>
-<a href="/lab2/all_flowers">Посмотреть все цветы</a>
+<h1>Ошибка 400</h1>
+<p>Некорректные данные для добавления цветка.</p>
+<a href="{{ url_for('all_flowers') }}">Назад</a>
 {% endblock %}

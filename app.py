@@ -316,34 +316,45 @@ def a():
 def a2():
     return 'со слэшем'
 
-flower_list = ['роза', 'тюльпан', 'незабудка', 'ромашка']
+flower_list = [
+    {"name": "роза", "price": 300},
+    {"name": "тюльпан", "price": 310},
+    {"name": "незабудка", "price": 320},
+    {"name": "ромашка", "price": 330},
+    {"name": "георгин", "price": 300},
+    {"name": "гладиолус", "price": 310}
+]
 
-@app.route('/lab2/flowers/<int:flower_id>')
-def flowers(flower_id):
-    if flower_id >= len(flower_list):
-        abort(404)
-    flower = flower_list[flower_id]
-    return render_template('flower.html', flower=flower, flower_id=flower_id)
-
-@app.route("/lab2/clear_flowers")
-def clear_flowers():
-    global flower_list
-    flower_list.clear()
-    return redirect(url_for('all_flowers'))
-
-@app.route('/lab2/all_flowers')
+@app.route('/lab2/flowers')
 def all_flowers():
     return render_template('all_flowers.html', flower_list=flower_list)
 
+@app.route('/lab2/del_flower/<int:flower_id>')
+def del_flower(flower_id):
+    if 0 <= flower_id < len(flower_list):
+        flower_list.pop(flower_id)
+        return redirect(url_for('all_flowers'))
+    else:
+        abort(404)
+
+@app.route('/lab2/clear_flowers')
+def clear_flowers():
+    flower_list.clear()
+    return redirect(url_for('all_flowers'))
+
 @app.route('/lab2/add_flower/<name>')
 def add_flower(name):
-    flower_list.append(name)
-    return render_template('add_flower.html', name=name, flower_list=flower_list)
+    flower_list.append({"name": name, "price": 300})
+    return redirect(url_for('all_flowers'))
 
-
-@app.route('/lab2/add_flower/')
-def add_flower_no_name():
-    return render_template('error400.html'), 400
+@app.route('/lab2/add_flower', methods=['POST'])
+def add_flower_post():
+    name = request.form.get('flower_name')
+    price = request.form.get('flower_price', type=int)
+    if not name or not price:
+        return render_template('error400.html'), 400
+    flower_list.append({"name": name, "price": price})
+    return redirect(url_for('all_flowers'))
 
 @app.route('/lab2/calc/')
 def calc_default():
