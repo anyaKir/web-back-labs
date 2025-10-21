@@ -29,9 +29,9 @@ def del_cookie():
 @lab3.route('/lab3/form1')
 def form1():
     errors = {}
-    user = request.args.get('user')  # НЕ ставим дефолт
-    age = request.args.get('age')    # НЕ ставим дефолт
-    sex = request.args.get('sex')    # НЕ ставим дефолт
+    user = request.args.get('user')  
+    age = request.args.get('age')    
+    sex = request.args.get('sex')    
     
     if user == '':
         errors['user'] = 'Заполните поле!'
@@ -96,6 +96,55 @@ def settings():
                            bgcolor=bgcolor,
                            fontsize=fontsize,
                            fontstyle=fontstyle)
+
+@lab3.route('/lab3/ticket', methods=['GET', 'POST'])
+def ticket_form():
+    errors = {}
+    data = {}
+
+    if request.method == 'POST':
+        # Получаем данные из формы
+        data['fio'] = request.form.get('fio', '').strip()
+        data['berth'] = request.form.get('berth', '').strip()
+        data['linen'] = request.form.get('linen')
+        data['luggage'] = request.form.get('luggage')
+        data['age'] = request.form.get('age', '').strip()
+        data['departure'] = request.form.get('departure', '').strip()
+        data['destination'] = request.form.get('destination', '').strip()
+        data['date'] = request.form.get('date', '').strip()
+        data['insurance'] = request.form.get('insurance')
+
+        # Проверка всех полей на пустоту
+        for field in ['fio', 'berth', 'age', 'departure', 'destination', 'date']:
+            if not data[field]:
+                errors[field] = 'Обязательное поле!'
+
+        # Проверка возраста
+        try:
+            age_val = int(data['age'])
+            if not (1 <= age_val <= 120):
+                errors['age'] = 'Возраст должен быть от 1 до 120 лет!'
+        except:
+            errors['age'] = 'Введите корректный возраст!'
+
+        if not errors:
+            # Рассчет стоимости
+            price = 1000 if age_val >= 18 else 700
+            if data['berth'] in ['нижняя', 'нижняя боковая']:
+                price += 100
+            if data['linen'] == 'on':
+                price += 75
+            if data['luggage'] == 'on':
+                price += 250
+            if data['insurance'] == 'on':
+                price += 150
+
+            data['price'] = price
+            data['child_ticket'] = age_val < 18
+
+            return render_template('lab3/ticket_result.html', data=data)
+
+    return render_template('lab3/ticket_form.html', errors=errors, data=data)
 
 
 

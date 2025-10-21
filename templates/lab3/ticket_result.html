@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block lab %}Билет{% endblock %}
+
+{% block main %}
+<h1>Ваш билет</h1>
+
+<p>ФИО: {{ data.fio }}</p>
+<p>Возраст: {{ data.age }} {% if data.child_ticket %}- Детский билет{% endif %}</p>
+<p>Полка: {{ data.berth }}</p>
+<p>С бельём: {{ 'Да' if data.linen else 'Нет' }}</p>
+<p>С багажом: {{ 'Да' if data.luggage else 'Нет' }}</p>
+<p>Пункт выезда: {{ data.departure }}</p>
+<p>Пункт назначения: {{ data.destination }}</p>
+<p>Дата поездки: {{ data.date }}</p>
+<p>Страховка: {{ 'Да' if data.insurance else 'Нет' }}</p>
+<h2>Стоимость: {{ data.price }} руб.</h2>
+
+<a href="/lab3/ticket">Оформить ещё один билет</a>
+{% endblock %}

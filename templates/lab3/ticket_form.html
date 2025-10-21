@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block lab %}Железнодорожный билет{% endblock %}
+
+{% block main %}
+<h1>Бронирование железнодорожного билета</h1>
+
+<form method="post" action="/lab3/ticket">
+    <label>ФИО пассажира:</label>
+    <input type="text" name="fio" value="{{ data.fio or '' }}">
+    <span class="error">{{ errors.fio }}</span><br><br>
+
+    <label>Полка:</label>
+    <select name="berth">
+        <option value="">Выберите</option>
+        <option value="нижняя" {{ 'selected' if data.berth=='нижняя' }}>нижняя</option>
+        <option value="верхняя" {{ 'selected' if data.berth=='верхняя' }}>верхняя</option>
+        <option value="верхняя боковая" {{ 'selected' if data.berth=='верхняя боковая' }}>верхняя боковая</option>
+        <option value="нижняя боковая" {{ 'selected' if data.berth=='нижняя боковая' }}>нижняя боковая</option>
+    </select>
+    <span class="error">{{ errors.berth }}</span><br><br>
+
+    <label>С бельём:</label>
+    <input type="checkbox" name="linen" {% if data.linen %}checked{% endif %}><br><br>
+
+    <label>С багажом:</label>
+    <input type="checkbox" name="luggage" {% if data.luggage %}checked{% endif %}><br><br>
+
+    <label>Возраст:</label>
+    <input type="number" name="age" value="{{ data.age or '' }}">
+    <span class="error">{{ errors.age }}</span><br><br>
+
+    <label>Пункт выезда:</label>
+    <input type="text" name="departure" value="{{ data.departure or '' }}">
+    <span class="error">{{ errors.departure }}</span><br><br>
+
+    <label>Пункт назначения:</label>
+    <input type="text" name="destination" value="{{ data.destination or '' }}">
+    <span class="error">{{ errors.destination }}</span><br><br>
+
+    <label>Дата поездки:</label>
+    <input type="date" name="date" value="{{ data.date or '' }}">
+    <span class="error">{{ errors.date }}</span><br><br>
+
+    <label>Нужна страховка:</label>
+    <input type="checkbox" name="insurance" {% if data.insurance %}checked{% endif %}><br><br>
+
+    <button type="submit">Оформить билет</button>
+</form>
+{% endblock %}
