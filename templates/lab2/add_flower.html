@@ -8,5 +8,5 @@
 <p><b>Всего цветов:</b> {{ flower_list | length }}</p>
 <p><b>Полный список:</b> {{ flower_list | join(', ') }}</p>
 <hr>
-<a href="/lab2/all_flowers">Посмотреть все цветы</a>
+<a href="{{ url_for('lab2.all_flowers') }}">Посмотреть все цветы</a>
 {% endblock %}

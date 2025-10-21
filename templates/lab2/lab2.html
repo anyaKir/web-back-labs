@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 2{% endblock %}
+
+{% block main %}
+    <h1>Шаблоны</h1>
+    <div>Тема лабораторной - шаблоны. Список сделанных страниц:</div>
+<ol>
+    <li><a href="{{ url_for('lab2.example') }}">Пример</a></li>
+    <li><a href="{{ url_for('lab2.filters') }}">Фильтры</a></li>
+    <li><a href="{{ url_for('lab2.calc', a=1, b=1) }}">Калькулятор (по умолчанию 1/1)</a></li>
+    <li><a href="{{ url_for('lab2.calc', a=3, b=4) }}">Калькулятор (пример 3/4)</a></li>
+    <li><a href="{{ url_for('lab2.calc', a=10, b=1) }}">Калькулятор (10/1)</a></li>
+    <li><a href="{{ url_for('lab2.all_flowers') }}">Все цветы</a></li>
+    <li><a href="{{ url_for('lab2.add_flower', name='роза') }}">Добавить цветок (пример)</a></li>
+    <li><a href="{{ url_for('lab2.books') }}">Книги</a></li>
+    <li><a href="{{ url_for('lab2.cats') }}">Котики</a></li>
+</ol>
+{% endblock %}

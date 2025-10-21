@@ -4,25 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Анна Кирдячкина. {% block lab %}{% endblock %}</title>
-    <link rel="stylesheet" href = "{{ url_for('static', filename='main.css') }}">
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+    <link rel="stylesheet" href = "{{ url_for('static', filename='lab1/main.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='lab2/favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='lab2/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='lab2/favicon-16x16.png') }}">
     <style>
-    body {
-        {% if request.cookies.get('color') %}
-            color: {{ request.cookies.get('color') }};
-        {% endif %}
-        {% if request.cookies.get('bgcolor') %}
-            background-color: {{ request.cookies.get('bgcolor') }};
-        {% endif %}
-        {% if request.cookies.get('fontsize') %}
-            font-size: {{ request.cookies.get('fontsize') }};
-        {% endif %}
-        {% if request.cookies.get('fontstyle') %}
-            font-style: {{ request.cookies.get('fontstyle') }};
-        {% endif %}
-    }
+        body {
+            {% if request.cookies.get('color') %}
+                color: {{ request.cookies.get('color') }};
+            {% endif %}
+            {% if request.cookies.get('bgcolor') %}
+                background-color: {{ request.cookies.get('bgcolor') }};
+            {% endif %}
+            {% if request.cookies.get('fontsize') %}
+                font-size: {{ request.cookies.get('fontsize') }};
+            {% endif %}
+            {% if request.cookies.get('fontstyle') %}
+                font-style: {{ request.cookies.get('fontstyle') }};
+            {% endif %}
+        }
 </style>
 </head>
 <body>
