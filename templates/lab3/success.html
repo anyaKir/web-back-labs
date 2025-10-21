@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 3{% endblock %}
+
+{% block main %}
+<h1>Спасибо!</h1>
+
+<p>Ваш заказ оплачен на сумму <strong>{{ price }} ₽</strong>.</p>
+<p>Ожидайте доставку!</p>
+
+<div style="margin-top: 15px;">
+    <a href="/lab3/order">← Вернуться к заказу</a>
+</div>
+
+<style>
+    h1 {
+        color: green;
+        font-size: 2em;
+    }
+    p {
+        font-size: 1.2em;
+    }
+    a {
+        color: #007BFF;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
