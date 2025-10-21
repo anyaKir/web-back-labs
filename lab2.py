@@ -24,14 +24,14 @@ flower_list = [
 
 @lab2.route('/lab2/flowers')
 def all_flowers():
-    return render_template('all_flowers.html', flower_list=flower_list)
+    return render_template('lab2/all_flowers.html', flower_list=flower_list)
 
 
 @lab2.route('/lab2/del_flower/<int:flower_id>')
 def del_flower(flower_id):
     if 0 <= flower_id < len(flower_list):
         flower_list.pop(flower_id)
-        return redirect(url_for('all_flowers'))
+        return redirect(url_for('lab2/lab2.all_flowers'))
     else:
         abort(404)
 
@@ -39,13 +39,13 @@ def del_flower(flower_id):
 @lab2.route('/lab2/clear_flowers')
 def clear_flowers():
     flower_list.clear()
-    return redirect(url_for('all_flowers'))
+    return redirect(url_for('lab2/lab2.all_flowers'))
 
 
 @lab2.route('/lab2/add_flower/<name>')
 def add_flower(name):
-    flower_list.lab2end({"name": name, "price": 300})
-    return redirect(url_for('all_flowers'))
+    flower_list.append({"name": name, "price": 300})
+    return redirect(url_for('lab2/lab2.all_flowers'))
 
 
 @lab2.route('/lab2/add_flower', methods=['POST'])
@@ -54,26 +54,26 @@ def add_flower_post():
     price = request.form.get('flower_price', type=int)
     if not name or not price:
         return render_template('error400.html'), 400
-    flower_list.lab2end({"name": name, "price": price})
-    return redirect(url_for('all_flowers'))
+    flower_list.append({"name": name, "price": price})
+    return redirect(url_for('lab2/lab2.all_flowers'))
 
 
 @lab2.route('/lab2/calc/')
 def calc_default():
     """Перенаправление на калькулятор с значениями по умолчанию"""
-    return redirect('/lab2/calc/1/1')
+    return redirect('lab2//lab2/calc/1/1')
 
 
 @lab2.route('/lab2/calc/<int:a>')
 def calc_single(a):
     """Перенаправление на калькулятор с одним числом (второе = 1)"""
-    return redirect(f'/lab2/calc/{a}/1')
+    return redirect(f'lab2//lab2/calc/{a}/1')
 
 
 @lab2.route('/lab2/calc/<int:a>/<int:b>')
 def calc(a, b):
     """Калькулятор с двумя числами"""
-    return render_template('calc.html', a=a, b=b)
+    return render_template('lab2/calc.html', a=a, b=b)
 
 # Список книг
 books = [
@@ -167,7 +167,7 @@ books = [
 @lab2.route('/lab2/books')
 def books_list():
     """Список всех книг"""
-    return render_template('books.html', books=books)
+    return render_template('lab2/books.html', books=books)
 
 cats = [
     {
@@ -356,7 +356,7 @@ cats = [
 @lab2.route('/lab2/cats')
 def cats_list():
     """Список всех котиков"""
-    return render_template('cats.html', cats=cats)
+    return render_template('lab2/cats.html', cats=cats)
 
 
 @lab2.route('/lab2/example')
@@ -372,16 +372,16 @@ def example():
         {'name': 'мандарины', 'price': 95},
         {'name': 'манго', 'price': 321}
     ]
-    return render_template('example.html', name=name, lab_number=lab_number, group=group, course=course, fruits=fruits)
+    return render_template('lab2/example.html', name=name, lab_number=lab_number, group=group, course=course, fruits=fruits)
 
 
 @lab2.route('/lab2/')
 def lab():
-    return render_template('lab2.html')
+    return render_template('lab2/lab2.html')
 
 
 @lab2.route('/lab2/filters')
 def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
-    return render_template('filter.html', phrase=phrase)
+    return render_template('lab2/filter.html', phrase=phrase)
 

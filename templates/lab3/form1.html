@@ -4,46 +4,38 @@
 
 {% block main %}
 
-    {% if user %}
-
-    <h1>Привет, {{ user }}!</h1>
+{% if user or age or sex %}
+    <h1>Привет, {{ user or 'аноним' }}!</h1>
     <h2>Добро пожаловать на наш сайт!</h2>
+    <div>ваш возраст: {{ age or 'неизвестно' }}</div>
+    <div>ваш пол: {{ 'мужской' if sex=='male' else 'женский' if sex=='female' else 'неизвестный' }}</div>
+    <div><a href="/lab3/form1">Заново</a></div>
+    <hr>
+{% endif %}
 
-    <div>ваш возраст: {{ age }}</div>
-    <div>ваш пол: {{ 'мужской' if sex == 'male' else 'женский' }}</div>
+<form method="get" action="/lab3/form1">
+    <label>Ваше имя:</label>
     <div>
-        <a href ="/lab3/form1">Заново</a>
+        <input type="text" name="user" placeholder="как вас зовут?" value="{{ user or '' }}">
+        <span class='error'>{{ errors.user }}</span>
     </div>
 
-    {% else %}
+    <label>Ваш возраст:</label>
+    <div>
+        <input type="number" name="age" value="{{ age or '' }}">
+    </div>
 
-    <h1>Пользователь</h1>
+    <label>Ваш пол:</label>
+    <div>
+        <select name="sex">
+            <option value="male" {{ 'selected' if sex=='male' }}>мужчина</option>
+            <option value="female" {{ 'selected' if sex=='female' }}>женщина</option>
+        </select>
+    </div>
 
-    <form>
-        <label>Ваше имя:</label>
-        <div>
-            <input type="text" placeholder="как вас зовут?" name="user" value="{{ user or '' }}">
-            <span class='error'>{{ errors.user }}</span>
-        </div>
+    <div>
+        <button type="submit">Отправить</button>
+    </div>
+</form>
 
-        <label>Ваш возраст:</label>
-        <div>
-            <input type="number" name="age" value="{{ age or '' }}">
-            <span class='error'>{{ errors.user }}</span>
-        </div>
-
-        <label>Ваш пол:</label>
-        <div>
-            <select name="sex">
-                <option value="male" {{ sex== 'male' and 'selected' }}>мужчина</option>
-                <option value="female" {{ sex == 'female' and 'selected' }}>женщина</option>
-            </select>
-        </div>
-
-        <div>
-            <button type="submit">Отправить</button>
-        </div>
-    </form>
-
-    {% endif %}
-{% endblock %}  
+{% endblock %}
