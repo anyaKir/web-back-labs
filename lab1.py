@@ -1,36 +1,43 @@
 from flask import Blueprint, url_for, request, redirect, render_template
 import datetime
-
 lab1 = Blueprint('lab1', __name__)
+
 
 @lab1.route("/lab1/500")
 def error500():
     x = 1 / 0
     return str(x)
 
+
 @lab1.route("/lab1/400")
 def error400():
     return "<h1>400 — Недопустимый запрос (Bad Request)</h1>", 400
+
 
 @lab1.route("/lab1/401")
 def error401():
     return "<h1>401 — Неавторизован (Unauthorized)</h1>", 401
 
+
 @lab1.route("/lab1/402")
 def error402():
     return "<h1>402 — Требуется оплата (Payment Required)</h1>", 402
+
 
 @lab1.route("/lab1/403")
 def error403():
     return "<h1>403 — Доступ запрещён (Forbidden)</h1>", 403
 
+
 @lab1.route("/lab1/405")
 def error405():
     return "<h1>405 — Метод не поддерживается (Method Not Allowed)</h1>", 405
 
+
 @lab1.route("/lab1/418")
 def error418():
     return "<h1>418 — Я — чайник 😰💔 (I'm a teapot)</h1>", 418
+
 
 @lab1.route("/lab1")
 def lab():
@@ -72,6 +79,7 @@ def lab():
 </html>
 """
 
+
 @lab1.route("/lab1/web")
 def web():
     return """<!doctype html> 
@@ -84,6 +92,7 @@ def web():
              "X-Server": 'sample',
              'Content-Type': 'text/plain; charset=utf-8'
         }
+
 
 @lab1.route("/lab1/author")
 def author():
@@ -101,6 +110,7 @@ def author():
             </body>
         </html>"""
 
+
 @lab1.route('/lab1/image')
 def image():
     path = url_for("static", filename="мем.PNG")
@@ -112,6 +122,8 @@ def image():
     }
 
 count = 0
+
+
 @lab1.route('/lab1/counter')
 def counter():
     global count
@@ -135,6 +147,7 @@ def counter():
 </html>
 '''
 
+
 @lab1.route('/lab1/reset')
 def reset():
      global count
@@ -149,9 +162,11 @@ def reset():
     </html>
 '''
 
+
 @lab1.route("/lab1/info")
 def info():
     return redirect("/lab1/author")
+
 
 @lab1.route("/lab1/created")
 def created():
