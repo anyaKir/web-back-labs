@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block lab %}Список товаров{% endblock %}
+
+{% block main %}
+<form method="get" action="/lab3/products">
+    <label>Мин. цена:</label>
+    <input type="number" step="0.01" name="min_price"
+           placeholder="{{ all_min }}"
+           value="{{ min_price if min_price is not none }}">
+    
+    <label>Макс. цена:</label>
+    <input type="number" step="0.01" name="max_price"
+           placeholder="{{ all_max }}"
+           value="{{ max_price if max_price is not none }}">
+    
+    <button type="submit" name="search" value="1">Искать</button>
+    <a href="/lab3/products/reset" style="margin-left:10px;">Сброс</a>
+</form>
+
+<p>Найдено товаров: {{ count }}</p>
+
+{% if products %}
+    <ul>
+    {% for p in products %}
+        <li>
+            <strong>{{ p.name }}</strong> — {{ p.brand }}, {{ p.color }}, ${{ p.price }}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Не найдено ни одного товара</p>
+{% endif %}
+{% endblock %}
