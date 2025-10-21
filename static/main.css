@@ -55,3 +55,10 @@ footer {
     font-size: 0.9em;
     opacity: 0.8;
 }
+
+.error {
+    color: red;
+    font-size: 0.9em;
+    display: block; 
+    margin-top: 2px;
+}
