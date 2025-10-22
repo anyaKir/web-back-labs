@@ -36,7 +36,7 @@ def all_flowers():
 def del_flower(flower_id):
     if 0 <= flower_id < len(flower_list):
         flower_list.pop(flower_id)
-        return redirect(url_for('lab2/lab2.all_flowers'))
+        return redirect(url_for('lab2.all_flowers'))
     else:
         abort(404)
 
@@ -44,13 +44,13 @@ def del_flower(flower_id):
 @lab2.route('/lab2/clear_flowers')
 def clear_flowers():
     flower_list.clear()
-    return redirect(url_for('lab2/lab2.all_flowers'))
+    return redirect(url_for('lab2.all_flowers'))
 
 
 @lab2.route('/lab2/add_flower/<name>')
 def add_flower(name):
     flower_list.append({"name": name, "price": 300})
-    return redirect(url_for('lab2/lab2.all_flowers'))
+    return redirect(url_for('lab2.all_flowers'))
 
 
 @lab2.route('/lab2/add_flower', methods=['POST'])
@@ -60,7 +60,7 @@ def add_flower_post():
     if not name or not price:
         return render_template('error400.html'), 400
     flower_list.append({"name": name, "price": price})
-    return redirect(url_for('lab2/lab2.all_flowers'))
+    return redirect(url_for('lab2.all_flowers'))
 
 
 @lab2.route('/lab2/calc/')
