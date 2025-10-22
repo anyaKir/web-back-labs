@@ -3,6 +3,11 @@ import datetime
 lab2 = Blueprint('lab2', __name__)
 
 
+@lab2.route('/lab2/')
+def lab():
+    return render_template('lab2/lab2.html')
+
+
 @lab2.route('/lab2/a')
 def a():
     return 'без слэша'
@@ -373,11 +378,6 @@ def example():
         {'name': 'манго', 'price': 321}
     ]
     return render_template('lab2/example.html', name=name, lab_number=lab_number, group=group, course=course, fruits=fruits)
-
-
-@lab2.route('/lab2/')
-def lab():
-    return render_template('lab2/lab2.html')
 
 
 @lab2.route('/lab2/filters')
