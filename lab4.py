@@ -111,7 +111,7 @@ def tree():
     operation = request.form.get('operation')
 
     if operation == 'cut':
-        tree_count = max(0, tree_count - 1)
+        tree_count -=1
     elif operation == 'plant':
         tree_count += 1
 
