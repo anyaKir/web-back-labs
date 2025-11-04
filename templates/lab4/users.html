@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block lab %}Список пользователей{% endblock %}
+
+{% block main %}
+<h1>Пользователи</h1>
+
+<ul>
+    {% for u in users %}
+        <li>{{ u.name }} ({{ u.login }})</li>
+    {% endfor %}
+</ul>
+
+<h2>Редактирование своих данных</h2>
+<form method="post">
+    <div>
+        <label>Имя:</label>
+        <input type="text" name="name" value="{{ current_user.name }}">
+    </div>
+    <div>
+        <label>Логин:</label>
+        <input type="text" name="login" value="{{ current_user.login }}">
+    </div>
+    <div>
+        <label>Новый пароль:</label>
+        <input type="password" name="password">
+    </div>
+    <div>
+        <label>Подтверждение:</label>
+        <input type="password" name="confirm">
+    </div>
+
+    {% if error %}
+        <div style="color: red; font-weight: bold;">{{ error }}</div>
+    {% endif %}
+
+    <button type="submit" name="action" value="edit">Сохранить</button>
+</form>
+
+<h2>Удаление аккаунта</h2>
+<form method="post">
+    <button type="submit" name="action" value="delete">Удалить себя</button>
+</form>
+{% endblock %}
