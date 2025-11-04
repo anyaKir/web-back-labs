@@ -3,33 +3,35 @@
 {% block lab %}Лабораторная работа 4{% endblock %}
 
 {% block main %}
-    {% if authorized %}
-        <h1>Добро пожаловать, {{ name }}!</h1>
-        <form action="/lab4/logout" method="post">
-            <button>Выход</button>
-        </form>
-    {% else %}
-        <h1>Вход</h1>
-        <h2>Пожалуйста, авторизуйтесь</h2>
+{% if authorized %}
+    <h1>Добро пожаловать, {{ name }}!</h1>
+    <form action="/lab4/logout" method="post">
+        <button>Выход</button>
+    </form>
+    <p><a href="{{ url_for('lab4.users_list') }}">Список пользователей</a></p>
+{% else %}
+    <h1>Вход</h1>
+    <h2>Пожалуйста, авторизуйтесь</h2>
 
-        <form method="post">
-            <div>
-                <label for="login">Пользователь:</label>
-                <input type="text" id="login" name="login" value="{{ login }}">
-            </div>
-            <div>
-                <label for="password">Пароль:</label>
-                <input type="password" id="password" name="password">
-            </div>
+    <form method="post">
+        <div>
+            <label for="login">Пользователь:</label>
+            <input type="text" id="login" name="login" value="{{ login }}">
+        </div>
+        <div>
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password">
+        </div>
 
-            {% if error %}
-                <div style="color: red; font-weight: bold; margin: 10px 0;">{{ error }}</div>
-            {% endif %}
+        {% if error %}
+            <div style="color: red; font-weight: bold; margin: 10px 0;">{{ error }}</div>
+        {% endif %}
 
-            <div>
-                <button type="submit">Войти</button>
-                <button type="reset">Отмена</button>
-            </div>
-        </form>
-    {% endif %}
+        <div>
+            <button type="submit">Войти</button>
+            <button type="reset">Отмена</button>
+        </div>
+    </form>
+    <p><a href="{{ url_for('lab4.register') }}">Регистрация нового пользователя</a></p>
+{% endif %}
 {% endblock %}

@@ -125,27 +125,87 @@ users = [
     {'login': 'nastya', 'password': '444', 'name': 'Анастасия Кузнецова', 'gender': 'ж'},
 ]
 
+# ---------- REGISTER ----------
+@lab4.route('/lab4/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        login_value = request.form.get('login', '').strip()
+        password = request.form.get('password', '').strip()
+        confirm = request.form.get('confirm', '').strip()
+        name = request.form.get('name', '').strip()
+
+        if not login_value or not password or not confirm or not name:
+            error = "❌ Все поля должны быть заполнены"
+            return render_template('lab4/register.html', error=error, login=login_value, name=name)
+        if password != confirm:
+            error = "❌ Пароли не совпадают"
+            return render_template('lab4/register.html', error=error, login=login_value, name=name)
+        if any(u['login'] == login_value for u in users):
+            error = "❌ Пользователь с таким логином уже существует"
+            return render_template('lab4/register.html', error=error, login=login_value, name=name)
+
+        users.append({'login': login_value, 'password': password, 'name': name, 'gender': ''})
+        return redirect('/lab4/login')
+
+    return render_template('lab4/register.html', error='', login='', name='')
+
+# ---------- USERS LIST ----------
+@lab4.route('/lab4/users', methods=['GET', 'POST'])
+def users_list():
+    if 'login' not in session:
+        return redirect('/lab4/login')
+
+    current_user = next(u for u in users if u['login'] == session['login'])
+
+    # Удаление пользователя
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'delete':
+            users.remove(current_user)
+            session.pop('login')
+            return redirect('/lab4/login')
+        elif action == 'edit':
+            new_login = request.form.get('login', '').strip()
+            new_name = request.form.get('name', '').strip()
+            new_password = request.form.get('password', '').strip()
+            confirm = request.form.get('confirm', '').strip()
+
+            if new_password or confirm:
+                if new_password != confirm:
+                    error = "❌ Пароли не совпадают"
+                    return render_template('lab4/users.html', users=users, current_user=current_user, error=error)
+                current_user['password'] = new_password
+
+            if new_login:
+                if any(u['login'] == new_login and u != current_user for u in users):
+                    error = "❌ Логин уже занят"
+                    return render_template('lab4/users.html', users=users, current_user=current_user, error=error)
+                current_user['login'] = new_login
+                session['login'] = new_login
+
+            if new_name:
+                current_user['name'] = new_name
+
+            return redirect('/lab4/users')
+
+    return render_template('lab4/users.html', users=users, current_user=current_user, error='')
+# ---------- LOGIN / LOGOUT (обновленный) ----------
 @lab4.route('/lab4/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-      
         if 'login' in session:
             user = next((u for u in users if u['login'] == session['login']), None)
             if user:
                 return render_template("lab4/login.html", authorized=True, name=user['name'])
-        
         return render_template("lab4/login.html", authorized=False, login='', error='')
 
-    
     login_value = request.form.get('login', '').strip()
     password = request.form.get('password', '').strip()
 
-    
     if not login_value:
         return render_template("lab4/login.html", error="❌ Не введён логин", authorized=False, login=login_value)
     if not password:
         return render_template("lab4/login.html", error="❌ Не введён пароль", authorized=False, login=login_value)
-
 
     for user in users:
         if login_value == user['login'] and password == user['password']:
@@ -154,7 +214,6 @@ def login():
 
     error = '❌ Неверные логин и/или пароль'
     return render_template("lab4/login.html", error=error, authorized=False, login=login_value)
-
 
 @lab4.route('/lab4/logout', methods=['POST'])
 def logout():
