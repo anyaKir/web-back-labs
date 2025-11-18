@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, session
+from flask import Blueprint, request, render_template, session, redirect
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -96,10 +96,54 @@ def login():
 
 @lab5.route('/lab5/list')
 def list_articles():
-    return render_template('lab5/list.html')
+    login = session.get('login')
+    if not login:
+        return redirect('/lab5/login')
+
+    conn, cur = db_connect()
+
+    
+    cur.execute("SELECT id FROM users WHERE login = %s;", (login,))
+    user = cur.fetchone()
+    login_id = user["id"]
+
+   
+    cur.execute("SELECT * FROM articles WHERE user_id = %s ORDER BY id DESC;", (login_id,))
+    articles = cur.fetchall()
+
+    db_close(conn, cur)
+    
+    return render_template('lab5/list.html', articles=articles)
 
 
-@lab5.route('/lab5/create')
-def create_article():
-    return render_template('lab5/create.html')
+@lab5.route('/lab5/create', methods=['GET', 'POST'])
+def create():
+    login = session.get('login')
+    if not login:
+        return redirect('/lab5/login')
+
+    if request.method == 'GET':
+        return render_template('lab5/create_article.html')
+
+    title = request.form.get('title')
+    article_text = request.form.get('article_text')
+
+    if not (title or article_text):
+        return render_template('lab5/create_article.html', error='Заполните все поля')
+
+    conn, cur = db_connect()
+
+    
+    cur.execute("SELECT id FROM users WHERE login = %s;", (login,))
+    user = cur.fetchone()
+    user_id = user['id']
+
+    
+    cur.execute(
+        "INSERT INTO articles (user_id, title, article_text) VALUES (%s, %s, %s);",
+        (user_id, title, article_text)
+    )
+
+    db_close(conn, cur)
+    return redirect('/lab5/list')
 
