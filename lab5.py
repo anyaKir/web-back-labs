@@ -7,8 +7,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 lab5 = Blueprint('lab5', __name__)
 
 
-# --------------------- ФУНКЦИИ БД ---------------------
-
 def db_connect():
     conn = psycopg2.connect(
         host='127.0.0.1',
@@ -26,14 +24,10 @@ def db_close(conn, cur):
     conn.close()
 
 
-# ---------------------- ГЛАВНАЯ -----------------------
-
 @lab5.route('/lab5/')
 def lab():
     return render_template('lab5/lab5.html', login=session.get('login'))
 
-
-# ---------------------- РЕГИСТРАЦИЯ --------------------
 
 @lab5.route('/lab5/register', methods=['GET', 'POST'])
 def register():
@@ -44,23 +38,20 @@ def register():
     login = request.form.get('login')
     password = request.form.get('password')
 
-    # правильная проверка!
     if not login or not password:
         return render_template('lab5/register.html', error='Заполните все поля')
 
     conn, cur = db_connect()
 
-    # проверка существования
     cur.execute("SELECT login FROM users WHERE login = %s;", (login,))
     if cur.fetchone():
         db_close(conn, cur)
         return render_template('lab5/register.html',
                                error="Такой пользователь уже существует")
 
-    # хэширование пароля
     password_hash = generate_password_hash(password)
 
-    # безопасная вставка
+
     cur.execute(
         "INSERT INTO users (login, password) VALUES (%s, %s);",
         (login, password_hash)
@@ -69,8 +60,6 @@ def register():
     db_close(conn, cur)
     return render_template('lab5/success.html', login=login)
 
-
-# ------------------------- ВХОД ------------------------
 
 @lab5.route('/lab5/login', methods=['GET', 'POST'])
 def login():
@@ -94,20 +83,16 @@ def login():
         return render_template('lab5/login.html',
                                error="Логин и/или пароль неверны")
 
-    # проверка хэша
     if not check_password_hash(user['password'], password):
         db_close(conn, cur)
         return render_template('lab5/login.html',
                                error="Логин и/или пароль неверны")
 
-    # успешный вход
     session['login'] = login
 
     db_close(conn, cur)
     return render_template('lab5/success_login.html', login=login)
 
-
-# ------------------- ПРОЧИЕ СТРАНИЦЫ --------------------
 
 @lab5.route('/lab5/list')
 def list_articles():
