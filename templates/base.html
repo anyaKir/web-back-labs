@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Анна Кирдячкина. {% block lab %}{% endblock %}</title>
+    <title>Анна Кирдячкина.</title>
     <link rel="stylesheet" href = "{{ url_for('static', filename='lab1/main.css') }}">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='lab2/favicon.ico') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='lab2/favicon-32x32.png') }}">
@@ -23,11 +23,11 @@
                 font-style: {{ request.cookies.get('fontstyle') }};
             {% endif %}
         }
-</style>
+    </style>
 </head>
 <body>
     <header>
-        WEB-программирование, часть 2. {{ self.lab() }}
+        WEB-программирование, часть 2. {% block lab %}{% endblock %}
         <a href="/" style="color: white; text-decoration: none; float: right;">Главная</a>
     </header>
 

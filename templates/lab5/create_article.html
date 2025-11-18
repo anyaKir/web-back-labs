@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <h1>Создание статьи</h1>
+    
+    {% if error %}
+        <div style="color: red; margin-bottom: 15px; padding: 10px; border: 1px solid red; background-color: #ffe6e6;">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        <div>
+            <label>
+                Название статьи:
+                <input type="text" maxlength="50" name="title" required>
+            </label>
+        </div>
+        
+        <div>
+            <label>
+                Текст статьи:
+                <textarea name="article_text" rows="10" style="width: 100%;" required></textarea>
+            </label>
+        </div>
+        
+        <div>
+            <button type="submit">Готово</button>
+        </div>
+    </form>
+
+    <br>
+    <a href="/lab5/list">← Смотреть все статьи</a>
+{% endblock %}

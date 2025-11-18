@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5{% endblock %}
+
+{% block main %}
+    <h1>Регистрация успешна!</h1>
+    
+    <div style="color: green; margin-bottom: 20px;">
+        Поздравляем! Вы успешно зарегистрировались.
+    </div>
+
+    <p>
+        <a href="/lab5/" style="color: blue; text-decoration: underline;">
+            Вернуться на главную страницу лабораторной работы 5
+        </a>
+    </p>
+    
+    <p>
+        <a href="/lab5/login" style="color: blue; text-decoration: underline;">
+            Перейти к странице входа
+        </a>
+    </p>
+{% endblock %}
