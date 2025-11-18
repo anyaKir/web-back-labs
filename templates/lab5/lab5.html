@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WEB-программирование, часть 2. Лабораторная работа 5</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='lab2/favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='lab2/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='lab2/favicon-16x16.png') }}">
     <style>
         * {
             margin: 0;
@@ -101,6 +104,16 @@
             font-size: 1.2rem;
             color: #ffffff;
         }
+
+        .welcome-text {
+            margin-top: 20px;
+            font-size: 1.3em;
+        }
+
+        .info-text {
+            margin-top: 20px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -116,11 +129,18 @@
             <div class="nav-links">
                 <a href="/lab5/list">Список статей</a>
                 <a href="/lab5/create">Создать статью</a>
-                <a href="/lab5/login">Войти</a>
-                <a href="/lab5/register">Регистрация</a>
+                <a href="/lab5/public">Публичные статьи</a>
+                <a href="/lab5/users">Все пользователи</a>
+                {% if session.get('login') %}
+                    <a href="/lab5/profile">Профиль</a>
+                    <a href="/lab5/logout">Выйти</a>
+                {% else %}
+                    <a href="/lab5/login">Войти</a>
+                    <a href="/lab5/register">Регистрация</a>
+                {% endif %}
             </div>
             <div class="user-info">
-                {{ login if login else 'Anonymous' }}
+                {{ session.get('login') if session.get('login') else 'Anonymous' }}
             </div>
         </div>
     </nav>
@@ -128,7 +148,15 @@
     <div class="container">
         <main class="content">
             <div class="welcome-message">
-                База знаний
+                <h1>База знаний</h1>
+                
+                {% if session.get('login') %}
+                    <p class="welcome-text">Добро пожаловать, <strong>{{ session.get('login') }}</strong>!</p>
+                    <p class="info-text">Используйте навигацию выше для работы с системой</p>
+                {% else %}
+                    <p class="welcome-text">Добро пожаловать в базу знаний!</p>
+                    <p class="info-text">Для работы с личными статьями необходимо войти в систему</p>
+                {% endif %}
             </div>
         </main>
     </div>

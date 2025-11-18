@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5 - Мой профиль{% endblock %}
+
+{% block main %}
+    <h1>Настройки профиля</h1>
+    
+    {% if request.args.get('success') %}
+        <div style="color: green; margin-bottom: 15px; padding: 10px; border: 1px solid green; background-color: #e6ffe6;">
+            Данные успешно обновлены!
+        </div>
+    {% endif %}
+
+    {% if errors %}
+        <div style="color: red; margin-bottom: 15px; padding: 10px; border: 1px solid red; background-color: #ffe6e6;">
+            {% for error in errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        <div>
+            <label>
+                Логин (нельзя изменить):
+                <input type="text" value="{{ user.login }}" disabled style="background-color: #f0f0f0;">
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Реальное имя:
+                <input type="text" name="real_name" value="{{ user.real_name if user.real_name else '' }}">
+            </label>
+        </div>
+
+        <hr style="margin: 20px 0;">
+
+        <h3>Смена пароля</h3>
+        <p><small>Заполняйте только если хотите сменить пароль</small></p>
+
+        <div>
+            <label>
+                Текущий пароль:
+                <input type="password" name="current_password">
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Новый пароль:
+                <input type="password" name="new_password">
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Подтверждение нового пароля:
+                <input type="password" name="confirm_password">
+            </label>
+        </div>
+        
+        <button type="submit">Сохранить изменения</button>
+        <a href="/lab5/list" style="margin-left: 10px;">Отмена</a>
+    </form>
+
+    <br>
+    <a href="/lab5">На главную</a> | 
+    <a href="/lab5/users">Список пользователей</a> | 
+    <a href="/lab5/list">Мои статьи</a>
+{% endblock %}

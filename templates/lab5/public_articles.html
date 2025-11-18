@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5 - Публичные статьи{% endblock %}
+
+{% block main %}
+    <h1>Публичные статьи</h1>
+
+    {% if articles %}
+        {% for article in articles %}
+            <div style="background: white; padding: 15px; margin: 10px 0; border-radius: 5px;">
+                <div style="display: flex; justify-content: between; align-items: center;">
+                    <h2 style="margin: 0;">
+                        {% if article.is_favorite %}⭐ {% endif %}{{ article.title }}
+                    </h2>
+                    <div>
+                        <small>Автор: {{ article.author_login }}</small>
+                    </div>
+                </div>
+                <p style="white-space: pre-wrap;">{{ article.article_text }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center; padding: 40px; color: white;">
+            <p style="font-size: 1.2em;">Пока нет публичных статей.</p>
+            {% if login %}
+                <p><a href="/lab5/create" style="color: #ebc5e1;">Создайте первую публичную статью!</a></p>
+            {% else %}
+                <p><a href="/lab5/login" style="color: #ebc5e1;">Войдите</a>, чтобы создать статью</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <br>
+    {% if login %}
+        <a href="/lab5/create">Создать статью</a> | 
+        <a href="/lab5/list">Мои статьи</a> |
+    {% else %}
+        <a href="/lab5/login">Войти</a> | 
+        <a href="/lab5/register">Зарегистрироваться</a> |
+    {% endif %}
+    <a href="/lab5">На главную</a>
+{% endblock %}

@@ -1,14 +1,104 @@
 {% extends "base.html" %}
 
-{% block lab %}Лабораторная работа 5{% endblock %}
+{% block lab %}Лабораторная работа 5 - Мои статьи{% endblock %}
 
 {% block main %}
+    <h1>Мои статьи</h1>
 
-    <h1>Статьи</h1>
+    {% if articles %}
+        {% for article in articles %}
+            <div class="article {% if article.is_favorite %}favorite-article{% endif %}">
+                <div class="article-header">
+                    <h2>
+                        {% if article.is_favorite %}⭐ {% endif %}{{ article.title }}
+                    </h2>
+                    <div>
+                        <small>
+                            {% if article.is_public %}🌍 Публичная{% else %}🔒 Приватная{% endif %}
+                        </small>
+                    </div>
+                </div>
+                <p class="article-text">{{ article.article_text }}</p>
+                <div class="article-actions">
+                    <a href="/lab5/edit/{{ article.id }}">Редактировать</a>
+                    <a href="/lab5/toggle_favorite/{{ article.id }}">
+                        {% if article.is_favorite %}❌ Убрать из избранного{% else %}⭐ Добавить в избранное{% endif %}
+                    </a>
+                    <a href="/lab5/delete/{{ article.id }}" 
+                       onclick="return confirm('Вы уверены, что хотите удалить эту статью?')" 
+                       class="delete-link">Удалить</a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-articles">
+            <p>У вас пока нет ни одной статьи.</p>
+            <p><a href="/lab5/create" class="create-link">Создайте первую статью!</a></p>
+        </div>
+    {% endif %}
 
-    {% for article in articles %}
-        <h2>{{ article.title }}</h2>
-        <blockquote>{{ article.article_text }}</blockquote>
-    {% endfor %}
+    <br>
+    <div class="navigation-links">
+        <a href="/lab5/create">Создать новую статью</a> | 
+        <a href="/lab5">На главную</a> |
+        <a href="/lab5/public">Публичные статьи</a>
+    </div>
 
+    <style>
+        .article {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .favorite-article {
+            border-left: 4px solid gold;
+            background-color: #fff9e6;
+        }
+
+        .article-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .article-header h2 {
+            margin: 0;
+        }
+
+        .article-text {
+            white-space: pre-wrap;
+        }
+
+        .article-actions a {
+            margin-left: 10px;
+        }
+
+        .article-actions a:first-child {
+            margin-left: 0;
+        }
+
+        .delete-link {
+            color: red;
+        }
+
+        .no-articles {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .no-articles p {
+            font-size: 1.2em;
+        }
+
+        .create-link {
+            color: #ebc5e1;
+        }
+
+        .navigation-links {
+            margin-top: 20px;
+        }
+    </style>
 {% endblock %}

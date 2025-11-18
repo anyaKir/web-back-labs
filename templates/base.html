@@ -27,9 +27,19 @@
 </head>
 <body>
     <header>
-        WEB-программирование, часть 2. {% block lab %}{% endblock %}
-        <a href="/" style="color: white; text-decoration: none; float: right;">Главная</a>
-    </header>
+    WEB-программирование, часть 2. {% block lab %}{% endblock %}
+    <div style="float: right;">
+        {% if request.path.startswith('/lab5') %}
+            {% if session.get('login') %}
+                <span style="color: white; margin-right: 15px;">Пользователь: {{ session.get('login') }}</span>
+                <a href="/lab5/logout" style="color: white; text-decoration: none;">Выйти</a>
+            {% else %}
+                <span style="color: white; margin-right: 15px;">Anonymous</span>
+            {% endif %}
+        {% endif %}
+        <a href="/" style="color: white; text-decoration: none; margin-left: 15px;">Главная</a>
+    </div>
+</header>
 
     <main>
         {% block main %}{% endblock %}

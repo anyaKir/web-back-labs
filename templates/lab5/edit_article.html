@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block lab %}Лабораторная работа 5 - Создание статьи{% endblock %}
+{% block lab %}Лабораторная работа 5 - Редактирование статьи{% endblock %}
 
 {% block main %}
-    <h1>Создание статьи</h1>
+    <h1>Редактирование статьи</h1>
     
     {% if error %}
         <div style="color: red; margin-bottom: 15px; padding: 10px; border: 1px solid red; background-color: #ffe6e6;">
@@ -15,36 +15,37 @@
         <div>
             <label>
                 Название статьи:
-                <input type="text" maxlength="50" name="title" required>
+                <input type="text" maxlength="50" name="title" value="{{ article.title }}" required>
             </label>
         </div>
         
         <div>
             <label>
                 Текст статьи:
-                <textarea name="article_text" rows="10" style="width: 100%;" required></textarea>
+                <textarea name="article_text" rows="10" style="width: 100%;" required>{{ article.article_text }}</textarea>
             </label>
         </div>
 
         <div>
             <label>
-                <input type="checkbox" name="is_favorite">
+                <input type="checkbox" name="is_favorite" {% if article.is_favorite %}checked{% endif %}>
                 Добавить в избранное
             </label>
         </div>
 
         <div>
             <label>
-                <input type="checkbox" name="is_public">
+                <input type="checkbox" name="is_public" {% if article.is_public %}checked{% endif %}>
                 Сделать публичной (видна всем пользователям)
             </label>
         </div>
         
         <div>
-            <button type="submit">Создать статью</button>
+            <button type="submit">Сохранить изменения</button>
+            <a href="/lab5/list" style="margin-left: 10px;">Отмена</a>
         </div>
     </form>
 
     <br>
-    <a href="/lab5/list">← Смотреть все статьи</a>
+    <a href="/lab5/list">← Вернуться к списку статей</a>
 {% endblock %}

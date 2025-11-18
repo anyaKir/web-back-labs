@@ -14,18 +14,19 @@
     <form action="/lab5/login" method="post">
         <div>
             <label>
-                Логин: <input type="text" name="login">
+                Логин: <input type="text" name="login" required>
             </label>
         </div>
 
         <div>
             <label>
-                Пароль: <input type="password" name="password">
+                Пароль: <input type="password" name="password" required>
             </label>
         </div>
         
         <button type="submit">Вход</button>
     </form>
     
+    <p>Нет аккаунта? <a href="/lab5/register">Зарегистрируйтесь</a></p>
     <p><a href="/lab5">На главную</a></p>
 {% endblock %}
