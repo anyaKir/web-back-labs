@@ -120,7 +120,7 @@
                 <a href="/lab5/register">Регистрация</a>
             </div>
             <div class="user-info">
-                Anonymous
+                {{ login if login else 'Anonymous' }}
             </div>
         </div>
     </nav>
