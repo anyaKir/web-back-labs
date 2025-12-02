@@ -135,6 +135,43 @@ document.addEventListener('DOMContentLoaded', function() {
     getOfficeList();
 });
 </script>
+<style>
+#office-list {
+    list-style: none;
+    padding: 0;
+}
+
+#office-list li {
+    background: #e6ecc8;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #d484c4;
+}
+
+#office-list button {
+    margin-left: 10px;
+    padding: 5px 15px;
+    background: #c786de;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+#office-list button:hover {
+    background: #7f2bbf;
+}
+
+#total-cost {
+    background: #f0a0ea;
+    color: rgb(0, 0, 0);
+    padding: 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-top: 20px;
+}
+</style>
 {% endblock %}
 
 {% block main %}
