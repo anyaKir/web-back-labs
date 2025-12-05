@@ -7,6 +7,7 @@ from lab3 import lab3
 from lab4 import lab4
 from lab5 import lab5
 from lab6 import lab6
+from lab7 import lab7
 
 app = Flask(__name__)
 
@@ -19,6 +20,7 @@ app.register_blueprint(lab3)
 app.register_blueprint(lab4)
 app.register_blueprint(lab5)
 app.register_blueprint(lab6)
+app.register_blueprint(lab7)
 
 error_log = []  
 
@@ -160,6 +162,7 @@ def index():
             <li><a href="/lab4/">Четвертая лабораторная</a></li>
             <li><a href="/lab5/">Пятая лабораторная</a></li>
             <li><a href="/lab6/">Шестая лабораторная</a></li>
+            <li><a href="/lab7/">Седьмая лабораторная</a></li>
         </ul>
         <hr>
         <footer>
