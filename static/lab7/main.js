@@ -23,6 +23,11 @@ function fillFilmList() {
                 // Кнопки действий
                 let editButton = document.createElement('button');
                 editButton.innerText = 'редактировать';
+                
+                // ✅ ДОБАВЛЕНО: обработчик редактирования
+                editButton.onclick = function() {
+                    editFilm(i);
+                };
 
                 let delButton = document.createElement('button');
                 delButton.innerText = 'удалить';
@@ -32,16 +37,14 @@ function fillFilmList() {
                 };
 
                 tdActions.append(editButton);
-                tdActions.append(document.createTextNode(' ')); // пробел между кнопками
+                tdActions.append(document.createTextNode(' '));
                 tdActions.append(delButton);
 
-                // Собираем строку
                 tr.append(tdTitle);
                 tr.append(tdTitleRus);
                 tr.append(tdYear);
                 tr.append(tdActions);
 
-                // Добавляем строку в таблицу
                 tbody.append(tr);
             }
         });
@@ -82,13 +85,16 @@ function cancel() {
 
 // ✅ ДОБАВЛЕНО: функция добавления фильма (открытие формы)
 function addFilm() {
-    // Очищаем все поля
     document.getElementById('film-id').value = '';
     document.getElementById('title').value = '';
     document.getElementById('title-ru').value = '';
     document.getElementById('year').value = '';
     document.getElementById('description').value = '';
     document.getElementById('description-error').innerText = '';
+    
+    // Возвращаем стандартный текст кнопки
+    const okButton = document.querySelector('#film-modal button[onclick="sendFilm()"]');
+    okButton.innerText = 'OK';
     
     showModal();
 }
@@ -152,4 +158,32 @@ function sendFilm() {
         console.error('Ошибка:', error);
         alert('Произошла ошибка при сохранении фильма');
     });
+}
+
+function editFilm(id) {
+    fetch(`/lab7/rest-api/films/${id}`)
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('Фильм не найден');
+            }
+            return response.json();
+        })
+        .then(function(film) {
+            document.getElementById('film-id').value = id;
+            document.getElementById('title').value = film.title;
+            document.getElementById('title-ru').value = film.title_ru;
+            document.getElementById('year').value = film.year;
+            document.getElementById('description').value = film.description;
+            document.getElementById('description-error').innerText = '';
+            
+            // Можно изменить заголовок окна
+            const okButton = document.querySelector('#film-modal button[onclick="sendFilm()"]');
+            okButton.innerText = 'Сохранить изменения';
+            
+            showModal();
+        })
+        .catch(function(error) {
+            console.error('Ошибка:', error);
+            alert('Не удалось загрузить данные фильма для редактирования');
+        });
 }
