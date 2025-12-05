@@ -50,20 +50,19 @@ films = [
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
-    return films
+    return films  
 
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
     if id < 0 or id >= len(films):
-        return "Film not found", 404
-    return films[id]
+        return {"error": "Film not found"}, 404  
 
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
 def del_film(id):
     if id < 0 or id >= len(films):
-        return "Film not found", 404
+        return {"error": "Film not found"}, 404
     del films[id]
     return '', 204
 
@@ -71,8 +70,11 @@ def del_film(id):
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
 def put_film(id):
     if id < 0 or id >= len(films):
-        return "Film not found", 404
+        return {"error": "Film not found"}, 404
     film = request.get_json()
+    if film['description'] == "":
+        return {"description": "Заполните описание"}, 400
+    
     films[id] = film
     return films[id]
 
@@ -80,5 +82,11 @@ def put_film(id):
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
     film = request.get_json()
+    if not film or 'description' not in film:
+        return {"description": "Заполните описание"}, 400
+        
+    if film['description'] == "":
+        return {"description": "Заполните описание"}, 400
+    
     films.append(film)
-    return len(films) - 1
+    return {"id": len(films) - 1}
