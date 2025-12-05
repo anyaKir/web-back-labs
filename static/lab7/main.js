@@ -15,28 +15,19 @@ function fillFilmList() {
                 let tdYear = document.createElement('td');
                 let tdActions = document.createElement('td');
 
-                // Русское название (основное)
                 tdTitleRus.innerHTML = `<span class="rus-title">${films[i].title_ru}</span>`;
                
-                // Оригинальное название - курсивом и менее заметно
-                // Проверяем, нужно ли показывать "то же самое"
                 if (films[i].title && films[i].title.trim() !== '') {
                     if (films[i].title !== films[i].title_ru) {
-                        // Если названия разные - показываем оригинальное курсивом
                         tdTitle.innerHTML = `<span class="original-title"><i>${films[i].title}</i></span>`;
                     } else {
-                        // Если названия одинаковые - показываем "то же"
                         tdTitle.innerHTML = '<span class="original-title" style="opacity: 0.6;"><i>— то же —</i></span>';
                     }
                 } else {
-                    // Если оригинальное название пустое (не должно происходить после задания 2)
                     tdTitle.innerHTML = '<span class="original-title" style="opacity: 0.6;"><i>— то же —</i></span>';
                 }
                 
-                // Год с красивым оформлением
                 tdYear.innerHTML = `<span class="film-year">${films[i].year}</span>`;
-
-                // Кнопки редактирования и удаления
                 let editButton = document.createElement('button');
                 editButton.innerText = 'редактировать';
                 editButton.className = 'edit-btn';
@@ -145,14 +136,11 @@ function sendFilm() {
     const id = document.getElementById('film-id').value;
     const titleInput = document.getElementById('title');
     const titleRuInput = document.getElementById('title-ru');
-    
-    // Получаем значения
     const titleRu = titleRuInput.value.trim();
     const title = titleInput.value.trim();
     const year = parseInt(document.getElementById('year').value) || 0;
     const description = document.getElementById('description').value.trim();
     
-    // Создаем объект фильма
     const film = {
         title: title,
         title_ru: titleRu,
@@ -160,10 +148,8 @@ function sendFilm() {
         description: description
     };
     
-    // ЗАДАНИЕ 2: если оригинальное название пустое, а русское есть - заполняем оригинальное русским
     if (!film.title && film.title_ru) {
         film.title = film.title_ru;
-        // Также обновляем поле ввода, чтобы пользователь видел
         titleInput.value = film.title_ru;
     }
     
@@ -185,18 +171,15 @@ function sendFilm() {
     })
     .then(function(response) {
         if (response.ok) {
-            // Успешно - обновляем таблицу и закрываем модальное окно
             fillFilmList();
             hideModal();
             return {};
         } else {
-            // Ошибка - пытаемся получить JSON с ошибками
             return response.json();
         }
     })
     .then(function(data) {
         if (data) {
-            // Проверяем ошибки для каждого поля
             if (data.description) {
                 showError('description', data.description);
             }
@@ -209,7 +192,6 @@ function sendFilm() {
             if (data.year) {
                 showError('year', data.year);
             }
-            // Общая ошибка
             if (data.error && !data.description && !data.title_ru && !data.title && !data.year) {
                 alert('Ошибка: ' + data.error);
             }

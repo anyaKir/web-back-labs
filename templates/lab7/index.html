@@ -97,16 +97,16 @@
         }
         
         .edit-btn {
-            background: #f39c12;
+            background: #c986e9;
             color: white;
         }
         
         .edit-btn:hover {
-            background: #e67e22;
+            background: #9638d1;
         }
         
         .delete-btn {
-            background: #e74c3c;
+            background: #de6777;
             color: white;
         }
         
@@ -220,10 +220,8 @@
         <button onclick="addFilm()" class="add-btn">➕ Добавить фильм</button>
     </div>
 
-    <!-- Фон для модального окна -->
     <div class="modal-overlay" id="modal-overlay" onclick="cancel()"></div>
-    
-    <!-- Модальное окно для добавления/редактирования фильма -->
+  
     <div class="modal" id="film-modal">
         <h3 style="color: #8a2be2; margin-top: 0; margin-bottom: 20px;" id="modal-title">Добавить фильм</h3>
         
@@ -244,7 +242,7 @@
         
         <label>
             Год выпуска: *
-            <input type="number" id="year" min="1895" max="2025" placeholder="Например: 2020">
+            <input type="number" id="year" placeholder="Например: 2020">
             <div id="year-error" class="error-message"></div>
         </label>
         

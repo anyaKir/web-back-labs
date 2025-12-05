@@ -1,4 +1,5 @@
 from flask import Blueprint, url_for, request, redirect, render_template, jsonify
+from datetime import datetime
 
 lab7 = Blueprint('lab7', __name__)
 
@@ -48,6 +49,42 @@ films = [
 ]
 
 
+def validate_film(film):
+    """Функция для валидации данных фильма"""
+    errors = {}
+    
+    if 'title_ru' not in film or not film['title_ru'].strip():
+        errors['title_ru'] = 'Заполните русское название'
+    
+    if 'title_ru' in film and film['title_ru'].strip() and ('title' not in film or not film['title'].strip()):
+        film['title'] = film['title_ru']
+    
+    if 'title' not in film or not film['title'].strip():
+        if 'title_ru' not in film or not film['title_ru'].strip():
+            if 'title_ru' not in errors:  
+                errors['title'] = 'Заполните хотя бы одно название (оригинальное или русское)'
+    
+    if 'year' not in film:
+        errors['year'] = 'Укажите год выпуска'
+    else:
+        try:
+            year = int(film['year'])
+            current_year = datetime.now().year
+            if year < 1895:
+                errors['year'] = f'Год должен быть не раньше 1895 (первый фильм "Прибытие поезда")'
+            elif year > current_year:
+                errors['year'] = f'Год не может быть больше текущего ({current_year})'
+        except (ValueError, TypeError):
+            errors['year'] = 'Год должен быть числом'
+    
+    if 'description' not in film or not film['description'].strip():
+        errors['description'] = 'Заполните описание'
+    elif len(film['description'].strip()) > 2000:
+        errors['description'] = 'Описание не должно превышать 2000 символов'
+    
+    return errors, film
+
+
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
     return films
@@ -75,23 +112,12 @@ def put_film(id):
     
     film = request.get_json()
     
-    # ОСНОВНАЯ ЛОГИКА ПО ЗАДАНИЮ: 
-    # если русское название есть, а оригинальное пустое - копируем русское
-    if 'title_ru' in film and film['title_ru'].strip() and ('title' not in film or not film['title'].strip()):
-        film['title'] = film['title_ru']
-    
-    errors = {}
-    
-    if 'title_ru' not in film or not film['title_ru'].strip():
-        errors['title_ru'] = 'Заполните русское название'
-    
-    if 'description' not in film or not film['description'].strip():
-        errors['description'] = 'Заполните описание'
+    errors, validated_film = validate_film(film)
     
     if errors:
         return errors, 400
     
-    films[id] = film
+    films[id] = validated_film
     return films[id]
 
 
@@ -99,21 +125,10 @@ def put_film(id):
 def add_film():
     film = request.get_json()
     
-    # ОСНОВНАЯ ЛОГИКА ПО ЗАДАНИЮ:
-    # если русское название есть, а оригинальное пустое - копируем русское
-    if 'title_ru' in film and film['title_ru'].strip() and ('title' not in film or not film['title'].strip()):
-        film['title'] = film['title_ru']
-    
-    errors = {}
-
-    if 'title_ru' not in film or not film['title_ru'].strip():
-        errors['title_ru'] = 'Заполните русское название'
-    
-    if 'description' not in film or not film['description'].strip():
-        errors['description'] = 'Заполните описание'
+    errors, validated_film = validate_film(film)
     
     if errors:
         return errors, 400
     
-    films.append(film)
+    films.append(validated_film)
     return {"id": len(films) - 1}
