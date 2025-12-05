@@ -24,7 +24,6 @@ function fillFilmList() {
                 let editButton = document.createElement('button');
                 editButton.innerText = 'редактировать';
                 
-                // ✅ ДОБАВЛЕНО: обработчик редактирования
                 editButton.onclick = function() {
                     editFilm(i);
                 };
@@ -51,7 +50,6 @@ function fillFilmList() {
 }
 
 function deleteFilm(id, title) {
-    // Добавляем подтверждение удаления с названием фильма
     if(!confirm(`Вы точно хотите удалить фильм "${title}"?`)) {
         return;
     }
@@ -60,7 +58,6 @@ function deleteFilm(id, title) {
         method: 'DELETE'
     })
     .then(function() {
-        // После успешного удаления обновляем таблицу
         fillFilmList();
     })
     .catch(function(error) {
@@ -75,32 +72,52 @@ function showModal() {
 
 function hideModal() {
     document.getElementById('film-modal').style.display = 'none';
-    // Очищаем сообщения об ошибках
-    document.getElementById('description-error').innerText = '';
+    // Очищаем ошибки при закрытии окна
+    clearErrors();
 }
 
 function cancel() {
     hideModal();
 }
 
-// ✅ ДОБАВЛЕНО: функция добавления фильма (открытие формы)
+// Функция очистки ошибок
+function clearErrors() {
+    document.getElementById('description-error').innerText = '';
+    document.getElementById('description').classList.remove('error-field');
+}
+
+// Функция показа ошибки
+function showError(fieldId, message) {
+    const errorElement = document.getElementById(fieldId + '-error');
+    const inputElement = document.getElementById(fieldId);
+    
+    if (errorElement) {
+        errorElement.innerText = message;
+    }
+    if (inputElement) {
+        inputElement.classList.add('error-field');
+    }
+}
+
 function addFilm() {
     document.getElementById('film-id').value = '';
     document.getElementById('title').value = '';
     document.getElementById('title-ru').value = '';
     document.getElementById('year').value = '';
     document.getElementById('description').value = '';
-    document.getElementById('description-error').innerText = '';
     
-    // Возвращаем стандартный текст кнопки
+    clearErrors(); // Очищаем ошибки
+    
     const okButton = document.querySelector('#film-modal button[onclick="sendFilm()"]');
     okButton.innerText = 'OK';
     
     showModal();
 }
 
-// ✅ ДОБАВЛЕНО: функция отправки фильма на сервер
 function sendFilm() {
+    // Очищаем предыдущие ошибки
+    clearErrors();
+    
     const id = document.getElementById('film-id').value;
     const film = {
         title: document.getElementById('title').value,
@@ -117,11 +134,9 @@ function sendFilm() {
     // Определяем URL и метод
     let url, method;
     if (id === '') {
-        // Добавление нового фильма
         url = '/lab7/rest-api/films/';
         method = 'POST';
     } else {
-        // Редактирование существующего фильма
         url = `/lab7/rest-api/films/${id}`;
         method = 'PUT';
     }
@@ -146,12 +161,12 @@ function sendFilm() {
         }
     })
     .then(function(data) {
-        // Обработка ошибок валидации
+        // Обработка ошибок валидации (как в методичке)
         if (data && data.error) {
             alert('Ошибка: ' + data.error);
         } else if (data && data.description) {
             // Выводим ошибку для поля description
-            document.getElementById('description-error').innerText = data.description;
+            showError('description', data.description);
         }
     })
     .catch(function(error) {
@@ -174,9 +189,10 @@ function editFilm(id) {
             document.getElementById('title-ru').value = film.title_ru;
             document.getElementById('year').value = film.year;
             document.getElementById('description').value = film.description;
-            document.getElementById('description-error').innerText = '';
             
-            // Можно изменить заголовок окна
+            // Очищаем ошибки при открытии формы редактирования
+            clearErrors();
+            
             const okButton = document.querySelector('#film-modal button[onclick="sendFilm()"]');
             okButton.innerText = 'Сохранить изменения';
             
