@@ -8,37 +8,203 @@
         .modal {
             display: none;
             z-index: 100;
-            box-shadow: 3px 3px 5px black;
-            background: white;
-            width: 400px;
+            box-shadow: 0 4px 20px rgb(161, 66, 220);
+            background: rgb(246, 214, 238);
+            width: 450px;
             left: 50%;
-            top: 220px;
-            margin-left: -200px;
-            position: absolute;
-            padding: 20px;
+            top: 150px;
+            margin-left: -225px;
+            position: fixed;
+            padding: 25px;
+            border-radius: 10px;
+            border: 5px solid #fef8bd;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
         }
         
         .error-message {
-            color: red;
+            color: #e74c3c;
             font-size: 12px;
-            margin-top: 5px;
+            margin-top: 3px;
+            margin-bottom: 5px;
         }
         
-        /* Добавляем стиль для поля с ошибкой */
         .error-field {
-            border: 1px solid red;
+            border: 2px solid #e74c3c !important;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(171, 92, 216, 0.708);
+        }
+        
+        th {
+            background: #eba0ca;
+            color: rgb(0, 0, 0);
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f297bf;
+        }
+        
+        tr:hover {
+            background: #dbc5e5a8;
+        }
+        
+        button {
+            padding: 8px 16px;
+            margin: 3px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(75, 4, 81, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .add-btn {
+            background: #064a08;
+            color: white;
+            font-weight: bold;
+            padding: 10px 20px;
+        }
+        
+        .add-btn:hover {
+            background: #27ae60;
+        }
+        
+        .edit-btn {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .edit-btn:hover {
+            background: #e67e22;
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+        
+        #film-modal button {
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+        
+        .save-btn {
+            background: #a634db71;
+            color: white;
+        }
+        
+        .save-btn:hover {
+            background: #2980b9;
+        }
+        
+        .cancel-btn {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .cancel-btn:hover {
+            background: #7f8c8d;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        
+        label i {
+            font-weight: normal;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .original-title {
+            font-style: italic;
+            color: #666;
+            opacity: 0.8;
+            font-size: 0.95em;
+        }
+        
+        .rus-title {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .film-year {
+            font-weight: 600;
+            color: #8a2be2;
+            background: rgba(138, 43, 226, 0.1);
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 14px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e6d4ff;
         }
     </style>
 {% endblock %}
 
 {% block main %}
-    <h1>Список фильмов</h1>
+    <h1>🎬 Список фильмов</h1>
 
     <table>
         <thead>
             <tr>
-                <th>Название (ориг.)</th>
                 <th>Название (рус.)</th>
+                <th>Оригинальное название</th>
                 <th>Год</th>
                 <th>Действия</th>
             </tr>
@@ -51,36 +217,46 @@
     </script>
 
     <div>
-        <button onclick="addFilm()">Добавить фильм</button>
+        <button onclick="addFilm()" class="add-btn">➕ Добавить фильм</button>
     </div>
 
+    <!-- Фон для модального окна -->
+    <div class="modal-overlay" id="modal-overlay" onclick="cancel()"></div>
+    
     <!-- Модальное окно для добавления/редактирования фильма -->
     <div class="modal" id="film-modal">
+        <h3 style="color: #8a2be2; margin-top: 0; margin-bottom: 20px;" id="modal-title">Добавить фильм</h3>
+        
         <input type="hidden" id="film-id">
         
         <label>
-            Название фильма на русском:
-            <input type="text" id="title-ru">
-        </label><br><br>
+            Название фильма на русском: *
+            <input type="text" id="title-ru" placeholder="Введите название на русском">
+            <div id="title-ru-error" class="error-message"></div>
+        </label>
         
         <label>
             Название фильма на оригинальном языке
-            <i>(если фильм русский, то оставьте пустым):</i>
-            <input type="text" id="title">
-        </label><br><br>
+            <i>(если фильм русский, то оставьте пустым - автоматически скопируется русское название):</i>
+            <input type="text" id="title" placeholder="Введите оригинальное название">
+            <div id="title-error" class="error-message"></div>
+        </label>
         
         <label>
-            Год выпуска:
-            <input type="number" id="year" min="1895" max="2025">
-        </label><br><br>
+            Год выпуска: *
+            <input type="number" id="year" min="1895" max="2025" placeholder="Например: 2020">
+            <div id="year-error" class="error-message"></div>
+        </label>
         
         <label>
-            Описание:
-            <textarea id="description" rows="4"></textarea>
+            Описание: *
+            <textarea id="description" rows="4" placeholder="Краткое описание фильма"></textarea>
             <div id="description-error" class="error-message"></div>
-        </label><br><br>
+        </label>
         
-        <button onclick="sendFilm()">OK</button>
-        <button onclick="cancel()">Отмена</button>
+        <div class="modal-buttons">
+            <button onclick="cancel()" class="cancel-btn">Отмена</button>
+            <button onclick="sendFilm()" class="save-btn" id="send-button">OK</button>
+        </div>
     </div>
 {% endblock %}

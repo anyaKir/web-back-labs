@@ -75,10 +75,19 @@ def put_film(id):
     
     film = request.get_json()
     
+    # ОСНОВНАЯ ЛОГИКА ПО ЗАДАНИЮ: 
+    # если русское название есть, а оригинальное пустое - копируем русское
+    if 'title_ru' in film and film['title_ru'].strip() and ('title' not in film or not film['title'].strip()):
+        film['title'] = film['title_ru']
+    
     errors = {}
     
-    if film['description'] == "":
+    if 'title_ru' not in film or not film['title_ru'].strip():
+        errors['title_ru'] = 'Заполните русское название'
+    
+    if 'description' not in film or not film['description'].strip():
         errors['description'] = 'Заполните описание'
+    
     if errors:
         return errors, 400
     
@@ -90,12 +99,19 @@ def put_film(id):
 def add_film():
     film = request.get_json()
     
-    errors = {}
+    # ОСНОВНАЯ ЛОГИКА ПО ЗАДАНИЮ:
+    # если русское название есть, а оригинальное пустое - копируем русское
+    if 'title_ru' in film and film['title_ru'].strip() and ('title' not in film or not film['title'].strip()):
+        film['title'] = film['title_ru']
     
-    if not film or 'description' not in film:
+    errors = {}
+
+    if 'title_ru' not in film or not film['title_ru'].strip():
+        errors['title_ru'] = 'Заполните русское название'
+    
+    if 'description' not in film or not film['description'].strip():
         errors['description'] = 'Заполните описание'
-    elif film['description'] == "":
-        errors['description'] = 'Заполните описание'
+    
     if errors:
         return errors, 400
     
