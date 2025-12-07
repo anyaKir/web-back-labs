@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8 - Создать статью{% endblock %}
+
+{% block main %}
+<h1>Создать новую статью</h1>
+
+<div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+    <p>Вы вошли как: <strong>{{ current_user.login }}</strong></p>
+</div>
+
+<p>Здесь будет форма создания статьи...</p>
+
+<a href="/lab8/articles" class="btn btn-secondary">Назад к статьям</a>
+<a href="/lab8/" class="btn btn-secondary">На главную</a>
+{% endblock %}

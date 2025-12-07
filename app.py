@@ -3,6 +3,8 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 from db import db
 import datetime
+from flask_login import LoginManager
+from db.models import users
 from os import path
 from lab1 import lab1
 from lab2 import lab2
@@ -14,6 +16,10 @@ from lab7 import lab7
 from lab8 import lab8
 
 app = Flask(__name__)
+
+login_manager = LoginManager()
+login_manager.login_view = 'lab8.login'  
+login_manager.init_app(app)
 
 app.config['JSON_AS_ASCII'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
@@ -51,6 +57,10 @@ app.register_blueprint(lab7)
 app.register_blueprint(lab8)
 
 error_log = []  
+
+@login_manager.user_loader
+def load_user(user_id):
+    return users.query.get(int(user_id))
 
 @app.errorhandler(404)
 def not_found(err):
