@@ -3,6 +3,7 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 from db import db
 import datetime
+import secrets
 from flask_login import LoginManager
 from db.models import users
 from os import path
@@ -17,14 +18,9 @@ from lab8 import lab8
 
 app = Flask(__name__)
 
-login_manager = LoginManager()
-login_manager.login_view = 'lab8.login'  
-login_manager.init_app(app)
-
 app.config['JSON_AS_ASCII'] = False
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
-
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'секретно-секретный-секрет')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
 
 
@@ -46,6 +42,13 @@ else:
 
 db.init_app(app)
 
+login_manager = LoginManager()
+login_manager.login_view = 'lab8.login'
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return users.query.get(int(user_id))
 
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)
@@ -57,10 +60,6 @@ app.register_blueprint(lab7)
 app.register_blueprint(lab8)
 
 error_log = []  
-
-@login_manager.user_loader
-def load_user(user_id):
-    return users.query.get(int(user_id))
 
 @app.errorhandler(404)
 def not_found(err):

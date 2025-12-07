@@ -123,7 +123,7 @@
         <div class="user-info">
             Вы вошли как: <strong>{{ current_user.login }}</strong>
         </div>
-        
+       
         <div class="article-actions" style="margin-bottom: 25px;">
             <a href="/lab8/create" class="btn btn-primary">✏️ Создать новую статью</a>
             <a href="/lab8/" class="btn btn-secondary">← На главную</a>
@@ -138,11 +138,15 @@
                         ID: {{ article.id }} | 
                         Лайков: {{ article.likes }} | 
                         Публичная: {{ 'Да' if article.is_public else 'Нет' }}
+                        Избранная: {{ '⭐ Да' if article.is_favorite else 'Нет' }}
                     </div>
                     <div>{{ article.article_text[:100] }}...</div>
                     <div class="article-actions">
-                        <a href="#" class="btn btn-primary">Редактировать</a>
-                        <a href="#" class="btn btn-secondary">Удалить</a>
+                        <!-- ЭТИ ссылки должны быть ВНУТРИ цикла for article in articles -->
+                        <a href="/lab8/edit/{{ article.id }}" class="btn btn-primary">✏️ Редактировать</a>
+                        <a href="/lab8/delete/{{ article.id }}" 
+                           class="btn btn-secondary" 
+                           onclick="return confirm('Вы уверены, что хотите удалить эту статью?')">🗑️ Удалить</a>
                     </div>
                 </li>
                 {% endfor %}
