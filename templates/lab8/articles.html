@@ -1,16 +1,160 @@
-{% extends "base.html" %}
-
-{% block lab %}Лабораторная работа 8 - Статьи{% endblock %}
-
-{% block main %}
-<h1>Список статей</h1>
-
-<div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-    <p>Вы вошли как: <strong>{{ current_user.login }}</strong></p>
-</div>
-
-<p>Здесь будет список ваших статей...</p>
-
-<a href="/lab8/create" class="btn btn-primary">Создать новую статью</a>
-<a href="/lab8/" class="btn btn-secondary">На главную</a>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статьи - Лабораторная 8</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #e8f5e9;
+            color: #2d5a27;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2d5a27;
+            margin-bottom: 30px;
+        }
+        
+        .content-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid #ffccd5;
+            box-shadow: 0 4px 15px rgba(45, 90, 39, 0.1);
+        }
+        
+        .user-info {
+            background: #f0f7ee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4a7c3d;
+        }
+        
+        .article-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .article-item {
+            background: #f9f9f9;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffccd5;
+        }
+        
+        .article-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d5a27;
+            margin-bottom: 8px;
+        }
+        
+        .article-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .article-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background-color: #2d5a27;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #4a7c3d;
+        }
+        
+        .btn-secondary {
+            background-color: #666;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #777;
+        }
+        
+        .no-articles {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #4a7c3d;
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Список статей</h1>
+    
+    <div class="content-container">
+        <div class="user-info">
+            Вы вошли как: <strong>{{ current_user.login }}</strong>
+        </div>
+        
+        <div class="article-actions" style="margin-bottom: 25px;">
+            <a href="/lab8/create" class="btn btn-primary">✏️ Создать новую статью</a>
+            <a href="/lab8/" class="btn btn-secondary">← На главную</a>
+        </div>
+        
+        {% if articles %}
+            <ul class="article-list">
+                {% for article in articles %}
+                <li class="article-item">
+                    <div class="article-title">{{ article.title }}</div>
+                    <div class="article-meta">
+                        ID: {{ article.id }} | 
+                        Лайков: {{ article.likes }} | 
+                        Публичная: {{ 'Да' if article.is_public else 'Нет' }}
+                    </div>
+                    <div>{{ article.article_text[:100] }}...</div>
+                    <div class="article-actions">
+                        <a href="#" class="btn btn-primary">Редактировать</a>
+                        <a href="#" class="btn btn-secondary">Удалить</a>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="no-articles">
+                <p>У вас пока нет статей</p>
+                <p>Создайте свою первую статью!</p>
+            </div>
+        {% endif %}
+        
+        <a href="/lab8/" class="back-link">← На главную</a>
+    </div>
+</body>
+</html>

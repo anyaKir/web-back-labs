@@ -1,5 +1,5 @@
 # lab8.py
-from flask import Blueprint, render_template, request, redirect, flash
+from flask import Blueprint, render_template, request, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from db import db
@@ -20,26 +20,21 @@ def register():
     login_form = request.form.get('login')
     password_form = request.form.get('password')
     
-    # Проверка на пустые значения
     if not login_form or not password_form:
         return render_template('lab8/register.html', 
                              error='Логин и пароль не могут быть пустыми')
     
-    # Проверяем, существует ли пользователь
     user_exists = users.query.filter_by(login=login_form).first()
     if user_exists:
         return render_template('lab8/register.html',
                              error='Такой пользователь уже существует')
     
-    # Хешируем пароль и создаем нового пользователя
     password_hash = generate_password_hash(password_form)
     new_user = users(login=login_form, password=password_hash)
     
-    # Добавляем в БД
     db.session.add(new_user)
     db.session.commit()
     
-    # Автоматически логиним пользователя после регистрации
     login_user(new_user)
     return redirect('/lab8/')
 
@@ -51,20 +46,16 @@ def login():
     login_form = request.form.get('login')
     password_form = request.form.get('password')
     
-    # Проверка на пустые значения
     if not login_form or not password_form:
         return render_template('lab8/login.html',
                              error='Логин и пароль не могут быть пустыми')
     
-    # Ищем пользователя в БД
     user = users.query.filter_by(login=login_form).first()
     
     if user and check_password_hash(user.password, password_form):
-        # Успешная авторизация
         login_user(user, remember=False)
         return redirect('/lab8/')
     else:
-        # Неверные данные
         return render_template('lab8/login.html',
                              error='Неверный логин или пароль')
 
@@ -77,7 +68,6 @@ def logout():
 @lab8.route('/lab8/articles')
 @login_required
 def articles_list():
-    # Пока просто заглушка - позже добавим вывод статей
     return render_template('lab8/articles.html')
 
 @lab8.route('/lab8/create')
