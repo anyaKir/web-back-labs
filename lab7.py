@@ -66,9 +66,11 @@ def validate_film(film):
 
     return errors, validated_film
 
+
 @lab7.route('/lab7/')
 def main():
     return render_template('lab7/index.html')
+
 
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
@@ -77,6 +79,7 @@ def get_films():
     films = [dict(row) for row in cur.fetchall()]
     db_close(conn, cur)
     return json.dumps(films, ensure_ascii=False), 200, {'Content-Type': 'application/json'}
+
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
@@ -95,6 +98,7 @@ def get_film(id):
         if not film:
             abort(404)
         return json.dumps(dict(film), ensure_ascii=False), 200, {'Content-Type': 'application/json'}
+    
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
 def put_film(id):
@@ -104,8 +108,6 @@ def put_film(id):
         return json.dumps(errors, ensure_ascii=False), 400, {'Content-Type': 'application/json'}
 
     conn, cur = db_connect()
-    
-    # Проверка существования фильма
     if current_app.config['DB_TYPE'] == 'postgres':
         cur.execute("SELECT id FROM movies WHERE id = %s", (id,))
     else:
@@ -134,6 +136,7 @@ def put_film(id):
     validated_film['id'] = id
     return json.dumps(validated_film, ensure_ascii=False), 200, {'Content-Type': 'application/json'}
 
+
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
     film = request.get_json()
@@ -160,6 +163,7 @@ def add_film():
 
     db_close(conn, cur)
     return json.dumps({"id": new_id}, ensure_ascii=False), 201, {'Content-Type': 'application/json'}
+
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
 def del_film(id):
