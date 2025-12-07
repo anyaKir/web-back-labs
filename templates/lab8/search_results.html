@@ -1,0 +1,177 @@
+<!-- templates/lab8/search_results.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Результаты поиска - Лабораторная 8</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #e8f5e9;
+            color: #2d5a27;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2d5a27;
+            margin-bottom: 30px;
+        }
+        
+        .results-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid #ffccd5;
+            box-shadow: 0 4px 15px rgba(45, 90, 39, 0.1);
+        }
+        
+        .search-summary {
+            background: #f0f7ee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4a7c3d;
+        }
+        
+        .results-count {
+            font-weight: bold;
+            color: #2d5a27;
+        }
+        
+        .query {
+            font-style: italic;
+            color: #4a7c3d;
+        }
+        
+        .results-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .result-item {
+            background: #f9f9f9;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4a7c3d;
+        }
+        
+        .result-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d5a27;
+            margin-bottom: 8px;
+        }
+        
+        .result-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .result-text {
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        
+        .highlight {
+            background-color: #ffccd5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .actions {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background-color: #2d5a27;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #4a7c3d;
+        }
+        
+        .btn-secondary {
+            background-color: #666;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #777;
+        }
+    </style>
+</head>
+<body>
+    <h1>Результаты поиска</h1>
+    
+    <div class="results-container">
+        <div class="search-summary">
+            <span class="results-count">Найдено статей: {{ count }}</span>
+            <br>
+            <span>По запросу: <span class="query">"{{ search_query }}"</span></span>
+        </div>
+        
+        {% if results %}
+            <ul class="results-list">
+                {% for article in results %}
+                <li class="result-item">
+                    <div class="result-title">{{ article.title }}</div>
+                    <div class="result-meta">
+                        ID: {{ article.id }} | 
+                        Лайков: {{ article.likes }} | 
+                        {% if article.is_public %}<strong>Публичная</strong>{% endif %}
+                        {% if article.is_favorite %}⭐ Избранная{% endif %}
+                    </div>
+                    <div class="result-text">
+                        {{ article.article_text[:300] }}
+                        {% if article.article_text|length > 300 %}...{% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="no-results">
+                <p>По вашему запросу ничего не найдено</p>
+                <p>Попробуйте изменить поисковый запрос</p>
+            </div>
+        {% endif %}
+        
+        <div class="actions">
+            <a href="/lab8/search" class="btn btn-primary">🔍 Новый поиск</a>
+            <a href="/lab8/" class="btn btn-secondary">← На главную</a>
+            {% if username != 'anonymous' %}
+                <a href="/lab8/articles" class="btn btn-secondary">📋 Мои статьи</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

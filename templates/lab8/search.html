@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиск статей - Лабораторная 8</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #e8f5e9;
+            color: #2d5a27;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2d5a27;
+            margin-bottom: 30px;
+        }
+        
+        .search-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid #ffccd5;
+            box-shadow: 0 4px 15px rgba(45, 90, 39, 0.1);
+        }
+        
+        .user-info {
+            background: #f0f7ee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4a7c3d;
+        }
+        
+        .search-form {
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #4a7c3d;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+            min-width: 200px; 
+            max-width: 300px; 
+            margin: 0 auto;
+            transition: all 0.3s;
+            box-sizing: border-box; 
+        }
+        
+        .btn-primary {
+            background-color: #2d5a27;
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background-color: #4a7c3d;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #666;
+            color: white;
+            margin-top: 10px;
+            width: 100%; 
+        }
+        
+        .btn-secondary:hover {
+            background-color: #777;
+            transform: translateY(-2px);
+        }
+        
+        .search-hint {
+            background: #fff5f7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            border-left: 4px solid #ffccd5;
+            line-height: 1.6;
+        }
+        
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        
+        .search-button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            
+            .search-container {
+                padding: 20px;
+            }
+            
+            .btn {
+                min-width: 150px;
+                max-width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .search-input, .btn {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Поиск статей</h1>
+    
+    <div class="search-container">
+        <div class="user-info">
+            {% if username != 'anonymous' %}
+                Вы вошли как: <strong>{{ username }}</strong>
+            {% else %}
+                Вы ищете статьи как <strong>гость</strong>
+            {% endif %}
+        </div>
+        
+        <form action="/lab8/search" method="post" class="search-form">
+            <input type="text" 
+                   name="search_query" 
+                   class="search-input" 
+                   placeholder="Введите текст для поиска..." 
+                   required
+                   autocomplete="off">
+            <div class="search-button-container">
+                <button type="submit" class="btn btn-primary">🔍 Найти статьи</button>
+            </div>
+        </form>
+        
+        <div class="search-hint">
+            <strong>Как работает поиск:</strong><br>
+            • Поиск не учитывает регистр (Привет = привет = ПРИВЕТ)<br>
+            • Ищет по заголовку и тексту статьи<br>
+            {% if username != 'anonymous' %}
+                • Показывает ваши статьи и публичные статьи других пользователей
+            {% else %}
+                • Показывает только публичные статьи
+            {% endif %}
+        </div>
+        
+        <div class="button-container">
+            <a href="/lab8/" class="btn btn-secondary">← На главную</a>
+            <a href="/lab8/public" class="btn btn-secondary">📖 Все публичные статьи</a>
+        </div>
+    </div>
+</body>
+</html>

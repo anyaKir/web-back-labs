@@ -155,15 +155,15 @@
         <div class="menu-content">
             <div class="nav-links">
                 {% if username != 'anonymous' %}
-                    <!-- Для авторизованных пользователей -->
                     <a href="/lab8/articles">Список статей</a>
                     <a href="/lab8/create">Создать статью</a>
                     <a href="/lab8/logout">Выход</a>
                 {% else %}
-                    <!-- Для гостей -->
                     <a href="/lab8/login">Вход</a>
                     <a href="/lab8/register">Регистрация</a>
                     <a href="/lab8/articles">Список статей</a>
+                    <a href="/lab8/public">Публичные статьи</a>
+                    <a href="/lab8/search">Поиск</a>
                 {% endif %}
             </div>
             <div class="user-info">

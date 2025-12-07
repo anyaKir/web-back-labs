@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, request, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
-from db import db  # ← импортируем из папки db
+from db import db  
 from db.models import users, articles
+from sqlalchemy import or_, func
 
 lab8 = Blueprint('lab8', __name__, template_folder='templates')
 
-# Отложенный импорт внутри функций
 def get_db():
     from app import db
     return db
@@ -15,10 +15,12 @@ def get_models():
     from db.models import users, articles
     return users, articles
 
+
 @lab8.route('/lab8/')
 def main():
     username = current_user.login if current_user.is_authenticated else 'anonymous'
     return render_template('lab8/lab8.html', username=username)
+
 
 @lab8.route('/lab8/register', methods=['GET', 'POST'])
 def register():
@@ -49,6 +51,7 @@ def register():
     login_user(new_user)
     return redirect('/lab8/')
 
+
 @lab8.route('/lab8/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -72,6 +75,7 @@ def login():
     else:
         return render_template('lab8/login.html',
                              error='Неверный логин или пароль')
+    
 
 @lab8.route('/lab8/logout')
 @login_required
@@ -79,12 +83,36 @@ def logout():
     logout_user()
     return redirect('/lab8/')
 
+
 @lab8.route('/lab8/articles')
 @login_required
 def articles_list():
     users, articles = get_models()
+    
     user_articles = articles.query.filter_by(login_id=current_user.id).all()
-    return render_template('lab8/articles.html', articles=user_articles)
+    
+    public_articles = articles.query.filter(
+        articles.is_public == True,
+        articles.login_id != current_user.id
+    ).all()
+    
+    return render_template('lab8/articles.html', 
+                         articles=user_articles,
+                         public_articles=public_articles)
+
+
+@lab8.route('/lab8/public')
+def public_articles():
+    users, articles = get_models()
+    
+    all_public = articles.query.filter_by(is_public=True).all()
+    
+    username = current_user.login if current_user.is_authenticated else 'anonymous'
+    
+    return render_template('lab8/public.html',
+                         articles=all_public,
+                         username=username)
+
 
 @lab8.route('/lab8/create', methods=['GET', 'POST'])
 @login_required
@@ -118,6 +146,7 @@ def create_article():
     
     return redirect('/lab8/articles')
 
+
 @lab8.route('/lab8/edit/<int:article_id>', methods=['GET', 'POST'])
 @login_required
 def edit_article(article_id):
@@ -141,6 +170,7 @@ def edit_article(article_id):
     
     return redirect('/lab8/articles')
 
+
 @lab8.route('/lab8/delete/<int:article_id>')
 @login_required
 def delete_article(article_id):
@@ -156,3 +186,54 @@ def delete_article(article_id):
     db.session.commit()
     
     return redirect('/lab8/articles')
+
+
+@lab8.route('/lab8/search', methods=['GET', 'POST'])
+def search_articles():
+    if request.method == 'GET':
+        username = current_user.login if current_user.is_authenticated else 'anonymous'
+        return render_template('lab8/search.html', username=username)
+    
+    users, articles = get_models()
+    search_query = request.form.get('search_query', '').strip()
+    
+    if not search_query:
+        return redirect('/lab8/search')
+    
+    search_pattern = f"%{search_query}%"
+  
+    if current_user.is_authenticated:
+        my_results = articles.query.filter(
+            articles.login_id == current_user.id,
+            or_(
+                func.lower(articles.title).like(func.lower(search_pattern)),
+                func.lower(articles.article_text).like(func.lower(search_pattern))
+            )
+        ).all()
+        public_results = articles.query.filter(
+            articles.login_id != current_user.id,
+            articles.is_public == True,
+            or_(
+                func.lower(articles.title).like(func.lower(search_pattern)),
+                func.lower(articles.article_text).like(func.lower(search_pattern))
+            )
+        ).all()
+        
+        results = my_results + public_results
+        
+    else:
+        results = articles.query.filter(
+            articles.is_public == True,
+            or_(
+                func.lower(articles.title).like(func.lower(search_pattern)),
+                func.lower(articles.article_text).like(func.lower(search_pattern))
+            )
+        ).all()
+    
+    username = current_user.login if current_user.is_authenticated else 'anonymous'
+    
+    return render_template('lab8/search_results.html',
+                         results=results,
+                         search_query=search_query,
+                         username=username,
+                         count=len(results))

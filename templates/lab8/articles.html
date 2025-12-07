@@ -10,7 +10,7 @@
             background-color: #e8f5e9;
             color: #2d5a27;
             padding: 40px;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         
@@ -18,6 +18,13 @@
             text-align: center;
             color: #2d5a27;
             margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #4a7c3d;
+            margin: 40px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ffccd5;
         }
         
         .content-container {
@@ -34,6 +41,9 @@
             border-radius: 8px;
             margin-bottom: 25px;
             border-left: 4px solid #4a7c3d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .article-list {
@@ -47,6 +57,16 @@
             margin-bottom: 15px;
             border-radius: 8px;
             border-left: 4px solid #ffccd5;
+            transition: transform 0.2s;
+        }
+        
+        .article-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(45, 90, 39, 0.15);
+        }
+        
+        .public-article {
+            border-left: 4px solid #4a7c3d;
         }
         
         .article-title {
@@ -60,6 +80,32 @@
             font-size: 14px;
             color: #666;
             margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .meta-item {
+            display: inline-block;
+        }
+        
+        .public-badge {
+            background: #4a7c3d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .favorite-badge {
+            color: #ffcc00;
+        }
+        
+        .article-text {
+            line-height: 1.5;
+            margin: 10px 0;
+            color: #333;
         }
         
         .article-actions {
@@ -76,6 +122,8 @@
             font-size: 14px;
             cursor: pointer;
             display: inline-block;
+            transition: all 0.2s;
+            font-family: 'Courier New', Courier, monospace;
         }
         
         .btn-primary {
@@ -85,6 +133,7 @@
         
         .btn-primary:hover {
             background-color: #4a7c3d;
+            transform: scale(1.05);
         }
         
         .btn-secondary {
@@ -94,6 +143,16 @@
         
         .btn-secondary:hover {
             background-color: #777;
+            transform: scale(1.05);
+        }
+        
+        .btn-success {
+            background-color: #4a7c3d;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #5a9c4d;
         }
         
         .no-articles {
@@ -101,6 +160,9 @@
             padding: 40px;
             color: #666;
             font-style: italic;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border: 2px dashed #ffccd5;
         }
         
         .back-link {
@@ -109,10 +171,80 @@
             margin-top: 30px;
             color: #4a7c3d;
             text-decoration: none;
+            font-weight: bold;
+            padding: 10px;
+            transition: all 0.2s;
         }
         
         .back-link:hover {
             text-decoration: underline;
+            color: #2d5a27;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .separator {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ffccd5, transparent);
+            margin: 30px 0;
+        }
+        
+        .info-message {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #4a7c3d;
+            font-size: 14px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-public {
+            background-color: #4a7c3d;
+        }
+        
+        .status-private {
+            background-color: #ff6b6b;
+        }
+        
+        .status-favorite {
+            background-color: #ffcc00;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            
+            .article-meta {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .article-actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -121,13 +253,21 @@
     
     <div class="content-container">
         <div class="user-info">
-            Вы вошли как: <strong>{{ current_user.login }}</strong>
+            <div>
+                Вы вошли как: <strong>{{ current_user.login }}</strong>
+            </div>
+            <div>
+                <a href="/lab8/search" class="btn btn-success">🔍 Поиск статей</a>
+                <a href="/lab8/public" class="btn btn-success">📖 Публичные статьи</a>
+            </div>
         </div>
        
-        <div class="article-actions" style="margin-bottom: 25px;">
+        <div class="action-buttons">
             <a href="/lab8/create" class="btn btn-primary">✏️ Создать новую статью</a>
             <a href="/lab8/" class="btn btn-secondary">← На главную</a>
         </div>
+        
+        <h2>Мои статьи</h2>
         
         {% if articles %}
             <ul class="article-list">
@@ -135,14 +275,19 @@
                 <li class="article-item">
                     <div class="article-title">{{ article.title }}</div>
                     <div class="article-meta">
-                        ID: {{ article.id }} | 
-                        Лайков: {{ article.likes }} | 
-                        Публичная: {{ 'Да' if article.is_public else 'Нет' }}
-                        Избранная: {{ '⭐ Да' if article.is_favorite else 'Нет' }}
+                        <span class="meta-item">
+                            <span class="status-indicator {{ 'status-public' if article.is_public else 'status-private' }}"></span>
+                            Публичная: {{ 'Да' if article.is_public else 'Нет' }}
+                        </span>
+                        <span class="meta-item">
+                            <span class="status-indicator {{ 'status-favorite' if article.is_favorite else '' }}"></span>
+                            Избранная: {{ '⭐ Да' if article.is_favorite else 'Нет' }}
+                        </span>
+                        <span class="meta-item">ID: {{ article.id }}</span>
+                        <span class="meta-item">Лайков: {{ article.likes }}</span>
                     </div>
-                    <div>{{ article.article_text[:100] }}...</div>
+                    <div class="article-text">{{ article.article_text[:150] }}{% if article.article_text|length > 150 %}...{% endif %}</div>
                     <div class="article-actions">
-                        <!-- ЭТИ ссылки должны быть ВНУТРИ цикла for article in articles -->
                         <a href="/lab8/edit/{{ article.id }}" class="btn btn-primary">✏️ Редактировать</a>
                         <a href="/lab8/delete/{{ article.id }}" 
                            class="btn btn-secondary" 
@@ -154,7 +299,45 @@
         {% else %}
             <div class="no-articles">
                 <p>У вас пока нет статей</p>
-                <p>Создайте свою первую статью!</p>
+                <p>Создайте свою первую статью, нажав кнопку выше!</p>
+            </div>
+        {% endif %}
+    
+        {% if public_articles %}
+            <div class="separator"></div>
+            
+            <h2>Публичные статьи других пользователей</h2>
+            
+            <div class="info-message">
+                📚 Эти статьи созданы другими пользователями и доступны всем, так как помечены как публичные.
+            </div>
+            
+            <ul class="article-list">
+                {% for article in public_articles %}
+                <li class="article-item public-article">
+                    <div class="article-title">
+                        {{ article.title }}
+                        <span class="public-badge">Публичная</span>
+                    </div>
+                    <div class="article-meta">
+                        <span class="meta-item">
+                            <span class="status-indicator status-public"></span>
+                            Автор: пользователь #{{ article.login_id }}
+                        </span>
+                        <span class="meta-item">
+                            <span class="status-indicator {{ 'status-favorite' if article.is_favorite else '' }}"></span>
+                            Избранная: {{ '⭐ Да' if article.is_favorite else 'Нет' }}
+                        </span>
+                        <span class="meta-item">ID: {{ article.id }}</span>
+                        <span class="meta-item">Лайков: {{ article.likes }}</span>
+                    </div>
+                    <div class="article-text">{{ article.article_text[:200] }}{% if article.article_text|length > 200 %}...{% endif %}</div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="info-message">
+                🤷‍♂️ Публичных статей других пользователей пока нет. Когда другие пользователи создадут публичные статьи, они появятся здесь.
             </div>
         {% endif %}
         

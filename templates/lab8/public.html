@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Публичные статьи - Лабораторная 8</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #e8f5e9;
+            color: #2d5a27;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2d5a27;
+            margin-bottom: 30px;
+        }
+        
+        .content-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 2px solid #ffccd5;
+            box-shadow: 0 4px 15px rgba(45, 90, 39, 0.1);
+        }
+        
+        .user-info {
+            background: #f0f7ee;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4a7c3d;
+        }
+        
+        .article-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .article-item {
+            background: #f9f9f9;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4a7c3d;
+        }
+        
+        .article-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d5a27;
+            margin-bottom: 8px;
+        }
+        
+        .article-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .article-text {
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        
+        .public-badge {
+            display: inline-block;
+            background: #4a7c3d;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .no-articles {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .actions {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background-color: #2d5a27;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #4a7c3d;
+        }
+        
+        .btn-secondary {
+            background-color: #666;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #777;
+        }
+    </style>
+</head>
+<body>
+    <h1>Публичные статьи</h1>
+    
+    <div class="content-container">
+        <div class="user-info">
+            {% if username != 'anonymous' %}
+                Вы вошли как: <strong>{{ username }}</strong>
+            {% else %}
+                Вы просматриваете статьи как <strong>гость</strong>
+            {% endif %}
+            | <a href="/lab8/search" style="color: #4a7c3d; margin-left: 10px;">🔍 Поиск статей</a>
+        </div>
+        
+        {% if articles %}
+            <ul class="article-list">
+                {% for article in articles %}
+                <li class="article-item">
+                    <div class="article-title">
+                        {{ article.title }}
+                        <span class="public-badge">Публичная</span>
+                    </div>
+                    <div class="article-meta">
+                        ID: {{ article.id }} | 
+                        Лайков: {{ article.likes }} |
+                        {% if article.is_favorite %}⭐ Избранная{% endif %}
+                    </div>
+                    <div class="article-text">
+                        {{ article.article_text[:200] }}
+                        {% if article.article_text|length > 200 %}...{% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="no-articles">
+                <p>Публичных статей пока нет</p>
+            </div>
+        {% endif %}
+        
+        <div class="actions">
+            {% if username != 'anonymous' %}
+                <a href="/lab8/articles" class="btn btn-primary">📋 Мои статьи</a>
+            {% endif %}
+            <a href="/lab8/" class="btn btn-secondary">← На главную</a>
+        </div>
+    </div>
+</body>
+</html>
