@@ -4,13 +4,28 @@
 
 {% block main %}
 <h1>Регистрация</h1>
+
+{% if error %}
+<div style="color: red; padding: 10px; border: 1px solid red; margin-bottom: 20px;">
+    {{ error }}
+</div>
+{% endif %}
+
 <form action="/lab8/register" method="post">
     <div>
-        <label>Логин: <input type="text" name="login"></label>
+        <label>
+            Логин: <input type="text" name="login" required>
+        </label>
     </div>
+    
     <div>
-        <label>Пароль: <input type="password" name="password"></label>
+        <label>
+            Пароль: <input type="password" name="password" required>
+        </label>
     </div>
+    
     <button type="submit">Зарегистрироваться</button>
 </form>
+
+<p>Уже есть аккаунт? <a href="/lab8/login">Войдите</a></p>
 {% endblock %}
