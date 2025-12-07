@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    /* Общие стили для лабораторной 8 */
+    .lab8-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .lab8-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 3px solid #4a6fa5;
+    }
+    
+    .lab8-header h1 {
+        color: #2c3e50;
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .user-info {
+        background: linear-gradient(135deg, #4a6fa5 0%, #3a5a80 100%);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        font-size: 1.1em;
+    }
+    
+    .user-info strong {
+        color: #ffdd59;
+    }
+    
+    .navigation-section {
+        background-color: #f8f9fa;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        border-left: 5px solid #4a6fa5;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .navigation-section h2 {
+        color: #2c3e50;
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 1.5em;
+    }
+    
+    .nav-links {
+        list-style-type: none;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .nav-links li {
+        margin: 0;
+    }
+    
+    .nav-links a {
+        display: block;
+        text-decoration: none;
+        background-color: white;
+        color: #4a6fa5;
+        padding: 15px;
+        border-radius: 6px;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid #e9ecef;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .nav-links a:hover {
+        background-color: #4a6fa5;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(74, 111, 165, 0.3);
+        border-color: #4a6fa5;
+    }
+    
+    /* Стили для разных ссылок (можно сделать разными цветами) */
+    .nav-links li:nth-child(1) a:hover {
+        background-color: #3498db;
+        border-color: #3498db;
+    }
+    
+    .nav-links li:nth-child(2) a:hover {
+        background-color: #2ecc71;
+        border-color: #2ecc71;
+    }
+    
+    .nav-links li:nth-child(3) a:hover {
+        background-color: #9b59b6;
+        border-color: #9b59b6;
+    }
+    
+    .nav-links li:nth-child(4) a:hover {
+        background-color: #e74c3c;
+        border-color: #e74c3c;
+    }
+    
+    /* Дополнительный контент */
+    .welcome-message {
+        background-color: white;
+        padding: 25px;
+        border-radius: 10px;
+        margin-top: 30px;
+        border-top: 3px solid #ffdd59;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+    
+    .welcome-message p {
+        line-height: 1.6;
+        color: #555;
+        margin-bottom: 15px;
+    }
+    
+    .welcome-message p:last-child {
+        margin-bottom: 0;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 600px) {
+        .lab8-container {
+            padding: 15px;
+        }
+        
+        .nav-links {
+            grid-template-columns: 1fr;
+        }
+        
+        .lab8-header h1 {
+            font-size: 2em;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block lab %}Лабораторная работа 8{% endblock %}
+
+{% block main %}
+<div class="lab8-container">
+    <div class="lab8-header">
+        <h1>База знаний</h1>
+    </div>
+    
+    <div class="user-info">
+        Пользователь: <strong>{{ username }}</strong>
+    </div>
+    
+    <div class="navigation-section">
+        <h2>Навигация:</h2>
+        <ul class="nav-links">
+            <li><a href="/lab8/login">Вход</a></li>
+            <li><a href="/lab8/register">Регистрация</a></li>
+            <li><a href="/lab8/articles">Список статей</a></li>
+            <li><a href="/lab8/create">Создать статью</a></li>
+        </ul>
+    </div>
+    
+    <div class="welcome-message">
+        <p>Добро пожаловать в систему "База знаний"! Это платформа для создания и управления статьями.</p>
+        <p>Для начала работы необходимо <strong>войти</strong> или <strong>зарегистрироваться</strong>.</p>
+        <p>После авторизации вы сможете создавать, просматривать и редактировать статьи.</p>
+    </div>
+</div>
+{% endblock %}
