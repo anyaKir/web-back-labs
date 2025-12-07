@@ -1,7 +1,26 @@
 function fillFilmList() {
-    fetch('/lab7/rest-api/films/')
-        .then(function(data) {
-            return data.json();
+    fetch('/lab7/rest-api/films/', {
+        headers: {
+            'Accept': 'application/json; charset=utf-8'
+        }
+    })
+        .then(function(response) {
+            // Проверяем кодировку ответа
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('charset=utf-8')) {
+                // Если сервер явно указал UTF-8
+                return response.json();
+            } else {
+                // Иначе получаем как текст и парсим
+                return response.text().then(function(text) {
+                    try {
+                        return JSON.parse(text);
+                    } catch(e) {
+                        console.error('Ошибка парсинга JSON:', e);
+                        return [];
+                    }
+                });
+            }
         })
         .then(function(films) {
             let tbody = document.getElementById('film-list');
@@ -15,7 +34,10 @@ function fillFilmList() {
                 let tdYear = document.createElement('td');
                 let tdActions = document.createElement('td');
 
-                tdTitleRus.innerHTML = `<span class="rus-title">${films[i].title_ru}</span>`;
+                // Безопасное отображение русского текста
+                tdTitleRus.textContent = films[i].title_ru;
+                tdTitleRus.style.fontWeight = 'bold';
+                tdTitleRus.style.color = '#2c3e50';
                
                 if (films[i].title && films[i].title.trim() !== '') {
                     if (films[i].title !== films[i].title_ru) {
@@ -28,19 +50,25 @@ function fillFilmList() {
                 }
                 
                 tdYear.innerHTML = `<span class="film-year">${films[i].year}</span>`;
+                
+                // ВАЖНО: Используем films[i].id вместо i!
                 let editButton = document.createElement('button');
                 editButton.innerText = 'редактировать';
                 editButton.className = 'edit-btn';
-                editButton.onclick = function() {
-                    editFilm(i);
-                };
+                editButton.onclick = (function(id) {
+                    return function() {
+                        editFilm(id);
+                    };
+                })(films[i].id); // Замыкание для сохранения правильного id
 
                 let delButton = document.createElement('button');
                 delButton.innerText = 'удалить';
                 delButton.className = 'delete-btn';
-                delButton.onclick = function() {
-                    deleteFilm(i, films[i].title_ru);
-                };
+                delButton.onclick = (function(id, title) {
+                    return function() {
+                        deleteFilm(id, title);
+                    };
+                })(films[i].id, films[i].title_ru); // Замыкание для сохранения id и названия
 
                 tdActions.append(editButton);
                 tdActions.append(delButton);
@@ -52,6 +80,10 @@ function fillFilmList() {
 
                 tbody.append(tr);
             }
+        })
+        .catch(function(error) {
+            console.error('Ошибка при загрузке фильмов:', error);
+            alert('Не удалось загрузить список фильмов. Пожалуйста, обновите страницу.');
         });
 }
 
@@ -165,7 +197,7 @@ function sendFilm() {
     fetch(url, {
         method: method,
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json; charset=utf-8'  // Добавлено charset
         },
         body: JSON.stringify(film)
     })
@@ -175,36 +207,45 @@ function sendFilm() {
             hideModal();
             return {};
         } else {
-            return response.json();
+            return response.json().then(function(data) {
+                throw data; // Перебрасываем данные об ошибке
+            });
         }
     })
-    .then(function(data) {
-        if (data) {
-            if (data.description) {
-                showError('description', data.description);
-            }
-            if (data.title_ru) {
-                showError('title-ru', data.title_ru);
-            }
-            if (data.title) {
-                showError('title', data.title);
-            }
-            if (data.year) {
-                showError('year', data.year);
-            }
-            if (data.error && !data.description && !data.title_ru && !data.title && !data.year) {
-                alert('Ошибка: ' + data.error);
-            }
-        }
+    .then(function() {
+        // Успешный случай уже обработан выше
     })
-    .catch(function(error) {
-        console.error('Ошибка:', error);
-        alert('Произошла ошибка при сохранении фильма');
+    .catch(function(errorData) {
+        if (errorData && typeof errorData === 'object') {
+            // Отображаем ошибки валидации
+            if (errorData.description) {
+                showError('description', errorData.description);
+            }
+            if (errorData.title_ru) {
+                showError('title-ru', errorData.title_ru);
+            }
+            if (errorData.title) {
+                showError('title', errorData.title);
+            }
+            if (errorData.year) {
+                showError('year', errorData.year);
+            }
+            if (errorData.error && !errorData.description && !errorData.title_ru && !errorData.title && !errorData.year) {
+                alert('Ошибка: ' + errorData.error);
+            }
+        } else {
+            console.error('Ошибка:', errorData);
+            alert('Произошла ошибка при сохранении фильма');
+        }
     });
 }
 
 function editFilm(id) {
-    fetch(`/lab7/rest-api/films/${id}`)
+    fetch(`/lab7/rest-api/films/${id}`, {
+        headers: {
+            'Accept': 'application/json; charset=utf-8'
+        }
+    })
         .then(function(response) {
             if (!response.ok) {
                 throw new Error('Фильм не найден');

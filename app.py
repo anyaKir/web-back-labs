@@ -11,6 +11,9 @@ from lab7 import lab7
 
 app = Flask(__name__)
 
+app.config['JSON_AS_ASCII'] = False
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
+
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'секретно-секретный-секрет')
 app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
 
