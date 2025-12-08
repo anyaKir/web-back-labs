@@ -40,18 +40,18 @@ function fillFilmList() {
                 tdTitleRus.style.color = '#2c3e50';
                
                 if (films[i].title && films[i].title.trim() !== '') {
-                    if (films[i].title !== films[i].title_ru) {
-                        tdTitle.innerHTML = `<span class="original-title"><i>${films[i].title}</i></span>`;
-                    } else {
-                        tdTitle.innerHTML = '<span class="original-title" style="opacity: 0.6;"><i>— то же —</i></span>';
-                    }
+                  if (films[i].title !== films[i].title_ru) {
+                    tdTitle.innerHTML = `<span class="original-title"><i>${films[i].title}</i></span>`;
+                } else {
+                    tdTitle.innerHTML = `<span class="original-title" style="opacity: 0.6;"><i>${films[i].title_ru}</i></span>`;
+                }
+
                 } else {
                     tdTitle.innerHTML = '<span class="original-title" style="opacity: 0.6;"><i>— то же —</i></span>';
                 }
                 
                 tdYear.innerHTML = `<span class="film-year">${films[i].year}</span>`;
                 
-                // ВАЖНО: Используем films[i].id вместо i!
                 let editButton = document.createElement('button');
                 editButton.innerText = 'редактировать';
                 editButton.className = 'edit-btn';
