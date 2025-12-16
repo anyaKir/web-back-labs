@@ -1,0 +1,303 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 9 - Вход{% endblock %}
+
+{% block main %}
+<div class="lab9-auth-container">
+    <div class="new-year-header">
+        <h1>🎅 Вход в Новогодний Портал 🎄</h1>
+        <p class="subtitle">Откройте все подарки и встретьте Новый год с нами!</p>
+    </div>
+    
+    {% if error %}
+    <div class="error-message">
+        ❌ {{ error }}
+    </div>
+    {% endif %}
+    
+    <form method="POST" action="/lab9/login" class="lab9-auth-form">
+        <div class="form-group">
+            <label for="login">
+                <span class="icon">👤</span> Логин:
+            </label>
+            <input type="text" id="login" name="login" required 
+                   placeholder="Введите ваш логин" 
+                   value="{{ request.form.login if request.form else '' }}"
+                   class="form-input">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">
+                <span class="icon">🔒</span> Пароль:
+            </label>
+            <input type="password" id="password" name="password" required 
+                   placeholder="Введите ваш пароль"
+                   class="form-input">
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="submit-btn">
+                <span class="btn-icon">🎄</span> Войти в волшебство
+            </button>
+        </div>
+    </form>
+    
+    <div class="auth-links">
+        <div class="link-item">
+            <span class="icon">🎁</span>
+            <a href="/lab9/register">Нет аккаунта? Зарегистрируйтесь!</a>
+        </div>
+        <div class="link-item">
+            <span class="icon">←</span>
+            <a href="/lab9/">Вернуться к подаркам</a>
+        </div>
+        <div class="link-item">
+            <span class="icon">🎅</span>
+            <a href="/">На главную страницу</a>
+        </div>
+    </div>
+    
+    <div class="new-year-tips">
+        <h3>🎉 Почему стоит войти?</h3>
+        <ul>
+            <li>🔓 Открывайте все подарки (не только 3)</li>
+            <li>🎅 Вызов Деда Мороза для повторного наполнения коробок</li>
+            <li>⭐ Ваш прогресс сохраняется</li>
+            <li>🎁 Доступ к эксклюзивным новогодним подаркам</li>
+        </ul>
+    </div>
+</div>
+
+<style>
+.lab9-auth-container {
+    max-width: 500px;
+    margin: 30px auto;
+    padding: 30px;
+    background: linear-gradient(135deg, #1a2980, #26d0ce);
+    border-radius: 20px;
+    color: white;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.lab9-auth-container::before {
+    content: "❄️";
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    font-size: 200px;
+    opacity: 0.1;
+    transform: rotate(-15deg);
+}
+
+.new-year-header {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+.new-year-header h1 {
+    color: #ffd700;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+    margin-bottom: 10px;
+    font-size: 28px;
+}
+
+.subtitle {
+    color: #e0e0e0;
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+.lab9-auth-form {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-size: 18px;
+    color: #ffd700;
+}
+
+.form-group .icon {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #ffd700;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    color: #333;
+}
+
+.form-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.form-input::placeholder {
+    color: #999;
+}
+
+.form-actions {
+    margin-top: 30px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(231, 76, 60, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(-1px);
+}
+
+.btn-icon {
+    font-size: 24px;
+}
+
+.error-message {
+    background: rgba(231, 76, 60, 0.2);
+    border: 2px solid #e74c3c;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: bold;
+    color: #ffcccc;
+    position: relative;
+    z-index: 1;
+}
+
+.auth-links {
+    margin-top: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+.link-item {
+    margin: 15px 0;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.link-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(5px);
+}
+
+.link-item a {
+    color: #ffd700;
+    text-decoration: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.link-item .icon {
+    font-size: 20px;
+}
+
+.new-year-tips {
+    margin-top: 40px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    border-left: 5px solid #ffd700;
+    position: relative;
+    z-index: 1;
+}
+
+.new-year-tips h3 {
+    color: #ffd700;
+    margin-bottom: 15px;
+    font-size: 22px;
+}
+
+.new-year-tips ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.new-year-tips li {
+    margin: 10px 0;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Анимация снега */
+@keyframes snow {
+    0% { transform: translateY(-100px) rotate(0deg); }
+    100% { transform: translateY(100vh) rotate(360deg); }
+}
+
+.snowflake {
+    position: absolute;
+    color: white;
+    opacity: 0.5;
+    animation: snow 10s linear infinite;
+    z-index: 0;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.querySelector('.lab9-auth-container');
+    if (!container) return;
+    
+    for (let i = 0; i < 20; i++) {
+        const snowflake = document.createElement('div');
+        snowflake.className = 'snowflake';
+        snowflake.innerHTML = '❄️';
+        snowflake.style.left = Math.random() * 100 + '%';
+        snowflake.style.fontSize = (Math.random() * 20 + 10) + 'px';
+        snowflake.style.animationDuration = (Math.random() * 10 + 5) + 's';
+        snowflake.style.animationDelay = Math.random() * 5 + 's';
+        container.appendChild(snowflake);
+    }
+});
+</script>
+{% endblock %}

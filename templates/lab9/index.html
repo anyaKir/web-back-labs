@@ -2,8 +2,325 @@
 
 {% block lab %}Лабораторная работа 9{% endblock %}
 
-{% block script %}{% endblock %}
-
 {% block main %}
-    <h1>Поздравления</h1>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: #4da6ff;
+        min-height: 100vh;
+        font-family: 'Arial', sans-serif;
+    }
+
+    /* Снегопад */
+    .snow {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .snowflake {
+        position: absolute;
+        color: white;
+        opacity: 0.7;
+        animation: snowfall linear infinite;
+        font-size: 12px;
+    }
+
+    @keyframes snowfall {
+        to { transform: translateY(100vh); }
+    }
+
+    /* Основной контейнер */
+    .container {
+        position: relative;
+        z-index: 2;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Заголовок */
+    .header {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    .title {
+        font-size: 2rem;
+        color: white;
+        margin-bottom: 5px;
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        color: #eef;
+    }
+
+    /* Контрольная панель */
+    .control-panel {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        padding: 15px;
+        min-width: 200px;
+        flex: 1 1 200px;
+        text-align: center;
+    }
+
+    .card h3 {
+        color: #fff;
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+    }
+
+    /* Статистика */
+    .stat {
+        margin: 10px 0;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #eef;
+    }
+
+    /* Кнопки */
+    .btn {
+        display: block;
+        padding: 8px 12px;
+        margin: 8px auto;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .btn-primary { background: #ffb84d; color: #000; }
+    .btn-secondary { background: #66ccff; color: #000; }
+    .btn-danger { background: #ff6666; color: #fff; }
+
+    /* Подарки */
+    .gifts-container {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 20px;
+        min-height: 300px;
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .tree {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 3rem;
+        z-index: 1;
+    }
+
+    .gift {
+        position: absolute;
+        width: 60px;
+        cursor: pointer;
+        text-align: center;
+        transition: transform 0.2s;
+    }
+
+    .gift:hover:not(.opened):not(.locked) { transform: scale(1.1); }
+    .gift.opened { opacity: 0.6; cursor: default; }
+    .gift.locked { filter: grayscale(0.8); cursor: not-allowed; }
+
+    .gift-box {
+        width: 60px;
+        height: 60px;
+    }
+
+    .box-image { width: 100%; height: 100%; object-fit: contain; }
+    .gift-number {
+        font-size: 0.8rem;
+        color: #fff;
+        margin-top: 3px;
+    }
+
+    .locked-icon, .opened-icon {
+        position: absolute;
+        font-size: 1rem;
+        color: yellow;
+    }
+
+    .locked-icon { top: -4px; right: -4px; }
+    .opened-icon { top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem; }
+
+    /* Модальное окно */
+    .modal {
+        display: none;
+        position: fixed;
+        top:0; left:0;
+        width:100%; height:100%;
+        background: rgba(0,0,0,0.7);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal.active { display:flex; }
+
+    .modal-content {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 8px; right: 10px;
+        background: none; border:none;
+        font-size: 1.2rem; cursor:pointer;
+    }
+
+    .gift-message { margin: 15px 0; font-size: 1rem; }
+    .gift-image { width: 120px; height: 120px; margin: 0 auto; }
+</style>
+
+<!-- Снегопад -->
+<div class="snow" id="snow"></div>
+
+<div class="container">
+    <div class="header">
+        <h1 class="title">🎄 Новогодние Подарки 🎁</h1>
+        <p class="subtitle">Кликни на коробку под ёлкой!</p>
+    </div>
+
+    <div class="control-panel">
+        <div class="card">
+            <h3>Статистика</h3>
+            <div class="stat">
+                <div class="stat-value" id="opened-count">{{ opened_count }}</div>
+                <div class="stat-label">Открыто</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="remaining-count">{{ remaining }}</div>
+                <div class="stat-label">Осталось</div>
+            </div>
+        </div>
+        <div class="card">
+            <h3>Аккаунт</h3>
+            {% if is_auth %}
+                <p>Привет, <strong>{{ login }}</strong>!</p>
+                <button onclick="resetGifts()" class="btn btn-primary">🎅 Дед Мороз</button>
+                <a href="{{ url_for('lab9.logout') }}" class="btn btn-danger">Выйти</a>
+            {% else %}
+                <a href="{{ url_for('lab9.login') }}" class="btn btn-primary">Войти</a>
+                <a href="{{ url_for('lab9.register') }}" class="btn btn-secondary">Регистрация</a>
+                <p style="font-size:0.8rem;">* Без входа можно открыть только 3 подарка</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="gifts-container" id="giftsContainer">
+        <div class="tree">🎄</div>
+        {% for gift in gifts %}
+        <div class="gift 
+            {% if gift.opened %}opened{% endif %}
+            {% if not is_auth and gift.require_auth %}locked{% endif %}" 
+            data-id="{{ gift.position_id }}"
+            style="top: {{ gift.top_position }}%; left: {{ gift.left_position }}%;"
+            onclick="openGift({{ gift.position_id }})">
+            <div class="gift-box">
+                <img src="{{ url_for('static', filename='lab9/' + gift.box_image) }}" class="box-image">
+                {% if gift.opened %}<div class="opened-icon">✓</div>{% endif %}
+                {% if not is_auth and gift.require_auth %}<div class="locked-icon">🔒</div>{% endif %}
+            </div>
+            <div class="gift-number">Подарок {{ gift.position_id + 1 }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Модальное окно -->
+<div class="modal" id="giftModal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeModal()">×</button>
+        <h3>Вы открыли подарок!</h3>
+        <div class="gift-message" id="giftMessage"></div>
+        <img id="giftImage" class="gift-image" src="" alt="Подарок">
+    </div>
+</div>
+
+<script>
+function createSnow() {
+    const snow = document.getElementById('snow');
+    for(let i=0;i<40;i++){
+        const flake=document.createElement('div');
+        flake.className='snowflake';
+        flake.textContent='❄';
+        flake.style.left=Math.random()*100+'%';
+        flake.style.fontSize=10+Math.random()*10+'px';
+        flake.style.opacity=Math.random()*0.5+0.3;
+        flake.style.animationDuration=5+Math.random()*3+'s';
+        snow.appendChild(flake);
+    }
+}
+
+function openGift(id){
+    const gift=document.querySelector(`.gift[data-id="${id}"]`);
+    if(gift.classList.contains('opened')){ return; }
+    if(gift.classList.contains('locked')){ alert('Требуется вход'); return; }
+
+    fetch('/lab9/open_gift',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({gift_id:id})
+    }).then(r=>r.json()).then(data=>{
+        if(data.success){
+            document.getElementById('opened-count').textContent=data.opened_count;
+            document.getElementById('remaining-count').textContent=data.remaining;
+            gift.classList.add('opened');
+            const openedIcon=document.createElement('div');
+            openedIcon.className='opened-icon'; openedIcon.textContent='✓';
+            gift.querySelector('.gift-box').appendChild(openedIcon);
+            document.getElementById('giftMessage').textContent=data.message;
+            document.getElementById('giftImage').src=data.image||'/static/lab9/gift1.png';
+            document.getElementById('giftModal').classList.add('active');
+        }
+    });
+}
+
+function closeModal(){ document.getElementById('giftModal').classList.remove('active'); }
+function resetGifts(){
+    if(!confirm('Дед Мороз наполнит все подарки заново?')) return;
+    fetch('/lab9/santa',{method:'POST',headers:{'Content-Type':'application/json'}})
+    .then(r=>r.json()).then(data=>{
+        if(data.success) location.reload();
+    });
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+    createSnow();
+    document.getElementById('giftModal').addEventListener('click',e=>{if(e.target===this) closeModal();});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape') closeModal();});
+});
+</script>
 {% endblock %}
