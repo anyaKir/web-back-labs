@@ -1,8 +1,7 @@
 from flask import Blueprint, request, render_template, session, redirect, jsonify
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from werkzeug.security import check_password_hash
-from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 import re
 
 RGZ = Blueprint('RGZ', __name__)
@@ -31,7 +30,7 @@ def rgz_main():
         role=session.get('role')
     )
 
-# ---------------- API ----------------
+# ---------------- API для книг (доступно всем) ----------------
 @RGZ.route('/rgz/api/books')
 def api_books():
     where = []
@@ -69,7 +68,7 @@ def api_books():
     if where:
         sql += " WHERE " + " AND ".join(where)
 
-    if sort not in ['title','author','pages','publisher']:
+    if sort not in ['title','author','pages','publisher','title DESC','author DESC','pages DESC','publisher DESC']:
         sort = 'title'
 
     sql += f" ORDER BY {sort} LIMIT 20 OFFSET %s"
@@ -82,7 +81,7 @@ def api_books():
 
     return jsonify(books)
 
-# ---------------- ВХОД ----------------
+# ---------------- ВХОД ТОЛЬКО ДЛЯ АДМИНА ----------------
 @RGZ.route('/rgz/login', methods=['GET','POST'])
 def rgz_login():
     if request.method == 'GET':
@@ -91,64 +90,156 @@ def rgz_login():
     login = request.form.get('login')
     password = request.form.get('password')
 
+    # ДЛЯ ОТЛАДКИ - печатаем что ввели
+    print(f"=== ДЕБАГ ВХОДА ===")
+    print(f"Введён логин: '{login}'")
+    print(f"Введён пароль: '{password}'")
+
     if not login or not password:
         return render_template('RGZ/rgz_login.html', error='Заполните все поля')
 
     conn, cur = db_connect()
-    cur.execute("SELECT * FROM users WHERE login=%s", (login,))
+    
+    # ДЛЯ ОТЛАДКИ - смотрим что в базе
+    cur.execute("SELECT * FROM usersbooks")
+    all_users = cur.fetchall()
+    print(f"Все пользователи в базе: {all_users}")
+    
+    cur.execute("SELECT * FROM usersbooks WHERE login=%s", (login,))
     user = cur.fetchone()
+    
+    print(f"Найден пользователь: {user}")
+    
+    if user:
+        print(f"Хеш пароля в базе: {user['password']}")
+        print(f"Длина хеша: {len(user['password'])}")
+    
     db_close(conn, cur)
 
-    if not user or not check_password_hash(user['password'], password):
-        return render_template('RGZ/rgz_login.html', error='Неверный логин или пароль')
+    if not user:
+        return render_template('RGZ/rgz_login.html', error='Пользователь не найден')
+
+    # Проверяем пароль
+    print(f"Проверяем пароль '{password}' с хешем...")
+    from werkzeug.security import check_password_hash
+    
+    # ДЛЯ ОТЛАДКИ - также сгенерируем хеш для введённого пароля
+    test_hash = generate_password_hash(password)
+    print(f"Новый хеш для введённого пароля: {test_hash}")
+    
+    if not check_password_hash(user['password'], password):
+        print(f"Хеши не совпадают!")
+        return render_template('RGZ/rgz_login.html', error='Неверный пароль. Доступ только для администратора')
+
+    print(f"Успешный вход! Роль: {user['role']}")
+    
+    if user['role'] != 'admin':
+        return render_template('RGZ/rgz_login.html', error='Только администраторы могут входить')
 
     session['login'] = user['login']
     session['role'] = user['role']
     return redirect('/rgz/')
-
 # ---------------- ВЫХОД ----------------
 @RGZ.route('/rgz/logout')
 def rgz_logout():
     session.clear()
     return redirect('/rgz/')
 
-# ---------------- АДМИН ----------------
+# ---------------- АДМИН ПАНЕЛЬ ----------------
 @RGZ.route('/rgz/admin')
 def rgz_admin():
     if session.get('role') != 'admin':
         return redirect('/rgz/')
     return render_template('RGZ/rgz_admin.html')
 
-# ---------------- РЕГИСТРАЦИЯ ----------------
-@RGZ.route('/rgz/register', methods=['GET', 'POST'])
-def rgz_register():
-    if request.method == 'GET':
-        return render_template('RGZ/rgz_register.html')
-
-    login = request.form.get('login')
-    password = request.form.get('password')
-    confirm = request.form.get('confirm')
-
-    # Проверка пароля
-    if password != confirm:
-        return render_template('RGZ/rgz_register.html', error="Пароли не совпадают")
-
-    if not login or not password:
-        return render_template('RGZ/rgz_register.html', error="Заполните все поля")
-
-    # Проверка валидности логина (только латинские буквы и цифры)
-    if not re.match(r'^[A-Za-z0-9]+$', login):
-        return render_template('RGZ/rgz_register.html', error="Логин может содержать только латинские буквы и цифры")
-
+# ---------------- API для админа (CRUD книг) ----------------
+@RGZ.route('/rgz/api/admin/books', methods=['POST'])
+def api_add_book():
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'Доступ запрещен'}), 403
+    
+    data = request.json
+    # Валидация данных
+    if not data.get('title') or not data.get('author'):
+        return jsonify({'error': 'Название и автор обязательны'}), 400
+    
+    try:
+        pages = int(data.get('pages', 0))
+        if pages <= 0:
+            return jsonify({'error': 'Количество страниц должно быть положительным'}), 400
+    except:
+        return jsonify({'error': 'Некорректное количество страниц'}), 400
+    
     conn, cur = db_connect()
-    cur.execute("SELECT * FROM users WHERE login=%s;", (login,))
-    if cur.fetchone():
+    try:
+        cur.execute("""
+            INSERT INTO books (title, author, pages, publisher, cover)
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING id
+        """, (data['title'], data['author'], pages, data.get('publisher', ''), data.get('cover', '/static/RGZ/default-book.png')))
+        book_id = cur.fetchone()['id']
         db_close(conn, cur)
-        return render_template('RGZ/rgz_register.html', error="Пользователь с таким логином уже существует")
+        return jsonify({'success': True, 'id': book_id})
+    except Exception as e:
+        db_close(conn, cur)
+        return jsonify({'error': str(e)}), 500
 
-    # Вставка нового пользователя
-    hashed_password = generate_password_hash(password)
-    cur.execute("INSERT INTO users (login, password, role) VALUES (%s, %s, 'user');", (login, hashed_password))
+@RGZ.route('/rgz/api/admin/books/<int:book_id>', methods=['PUT', 'DELETE'])
+def api_admin_book(book_id):
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'Доступ запрещен'}), 403
+    
+    conn, cur = db_connect()
+    
+    if request.method == 'DELETE':
+        try:
+            cur.execute("DELETE FROM books WHERE id=%s", (book_id,))
+            db_close(conn, cur)
+            return jsonify({'success': True})
+        except Exception as e:
+            db_close(conn, cur)
+            return jsonify({'error': str(e)}), 500
+    
+    elif request.method == 'PUT':
+        data = request.json
+        # Валидация
+        if not data.get('title') or not data.get('author'):
+            return jsonify({'error': 'Название и автор обязательны'}), 400
+        
+        try:
+            pages = int(data.get('pages', 0))
+            if pages <= 0:
+                return jsonify({'error': 'Количество страниц должно быть положительным'}), 400
+        except:
+            return jsonify({'error': 'Некорректное количество страниц'}), 400
+        
+        try:
+            cur.execute("""
+                UPDATE books 
+                SET title=%s, author=%s, pages=%s, publisher=%s, cover=%s
+                WHERE id=%s
+            """, (data['title'], data['author'], pages, data.get('publisher', ''), 
+                  data.get('cover', '/static/RGZ/default-book.png'), book_id))
+            db_close(conn, cur)
+            return jsonify({'success': True})
+        except Exception as e:
+            db_close(conn, cur)
+            return jsonify({'error': str(e)}), 500
+
+# ---------------- СОЗДАНИЕ АДМИНА ПРИ НЕОБХОДИМОСТИ ----------------
+@RGZ.route('/rgz/init_admin')
+def init_admin():
+    # Этот маршрут нужно удалить после создания админа!
+    
+    conn, cur = db_connect()
+    
+    # Удаляем если уже есть
+    cur.execute("DELETE FROM usersbooks WHERE login='admin'")
+    
+    # Создаем админа (пароль: admin123)
+    hashed_password = generate_password_hash('admin123')
+    cur.execute("INSERT INTO usersbooks (login, password, role) VALUES (%s, %s, 'admin')", 
+                ('admin', hashed_password))
+    
     db_close(conn, cur)
-
-    return redirect('/rgz/login')
+    return "Админ создан: login: admin, password: admin123"
