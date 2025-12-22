@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Каталог книг</title>
+    <link rel="stylesheet" href="/static/rgz/style.css">
+</head>
+<body>
+
+<h1>Каталог книг</h1>
+
+{% if login %}
+<p>
+    Пользователь: {{ login }} |
+    <a href="/rgz/logout">Выйти</a>
+    {% if role == 'admin' %}
+        | <a href="/rgz/admin">Администрирование</a>
+    {% endif %}
+</p>
+{% else %}
+<a href="/rgz/login">Войти</a>
+{% endif %}
+
+<hr>
+
+<input id="title" placeholder="Название">
+<input id="author" placeholder="Автор">
+<input id="publisher" placeholder="Издательство">
+<input id="pages_from" type="number" placeholder="Стр. от">
+<input id="pages_to" type="number" placeholder="Стр. до">
+
+<select id="sort">
+    <option value="title">По названию</option>
+    <option value="author">По автору</option>
+    <option value="pages">По страницам</option>
+    <option value="publisher">По издательству</option>
+</select>
+
+<button onclick="loadBooks(true)">Найти</button>
+
+<div id="books"></div>
+<button onclick="loadBooks()">Показать ещё</button>
+
+<footer>
+<hr>
+Кирдячкина Анна Константиновна, ФБИ-32, 2025
+</footer>
+
+<script src="/static/rgz/books.js"></script>
+</body>
+</html>
