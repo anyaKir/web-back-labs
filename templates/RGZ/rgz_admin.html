@@ -586,24 +586,6 @@
         {% endif %}
     </div>
 
-    <!-- Модальное окно для быстрого просмотра -->
-    <div id="bookModal" class="modal-overlay" onclick="closeModal(event)">
-        <div class="modal" onclick="event.stopPropagation()">
-            <div class="modal-header">
-                <h3 id="modalTitle">Детали книги</h3>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="modalContent">
-                    <!-- Содержимое будет загружено динамически -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Модальное окно для добавления книги -->
     <div id="addModal" class="modal-overlay" onclick="closeAddModal(event)">
         <div class="modal" onclick="event.stopPropagation()">
