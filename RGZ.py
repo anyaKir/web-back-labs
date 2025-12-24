@@ -1,19 +1,17 @@
 from flask import Blueprint, request, render_template, session, redirect, jsonify
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import sqlite3
+from sqlite3 import Row  # Для работы со словарями
 from werkzeug.security import check_password_hash, generate_password_hash
 import re
 
 RGZ = Blueprint('RGZ', __name__)
+RGZ.secret_key = 'ваш-секретный-ключ-для-сессий-здесь'
 
 def db_connect():
-    conn = psycopg2.connect(
-        host='127.0.0.1',
-        database='anna_kirdyachkina_knowledge_base',
-        user='anna_kirdyachkina_knowledge_base',
-        password='123'
-    )
-    cur = conn.cursor(cursor_factory=RealDictCursor)
+    # Подключаемся к SQLite базе
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row  # Возвращаем строки как словари
+    cur = conn.cursor()
     return conn, cur
 
 def db_close(conn, cur):
@@ -45,23 +43,23 @@ def api_books():
     offset = int(request.args.get('offset', 0))
 
     if title:
-        where.append("title ILIKE %s")
+        where.append("title LIKE ?")
         args.append(f"%{title}%")
 
     if author:
-        where.append("author ILIKE %s")
+        where.append("author LIKE ?")
         args.append(f"%{author}%")
 
     if publisher:
-        where.append("publisher ILIKE %s")
+        where.append("publisher LIKE ?")
         args.append(f"%{publisher}%")
 
     if pages_from:
-        where.append("pages >= %s")
+        where.append("pages >= ?")
         args.append(int(pages_from))
 
     if pages_to:
-        where.append("pages <= %s")
+        where.append("pages <= ?")
         args.append(int(pages_to))
 
     sql = "SELECT * FROM books"
@@ -71,7 +69,7 @@ def api_books():
     if sort not in ['title','author','pages','publisher','title DESC','author DESC','pages DESC','publisher DESC']:
         sort = 'title'
 
-    sql += f" ORDER BY {sort} LIMIT 20 OFFSET %s"
+    sql += f" ORDER BY {sort} LIMIT 20 OFFSET ?"
     args.append(offset)
 
     conn, cur = db_connect()
@@ -79,7 +77,9 @@ def api_books():
     books = cur.fetchall()
     db_close(conn, cur)
 
-    return jsonify(books)
+    # Преобразуем Row в dict для JSON
+    books_list = [dict(book) for book in books]
+    return jsonify(books_list)
 
 # ---------------- ВХОД ТОЛЬКО ДЛЯ АДМИНА ----------------
 @RGZ.route('/rgz/login', methods=['GET','POST'])
@@ -103,14 +103,14 @@ def rgz_login():
     # ДЛЯ ОТЛАДКИ - смотрим что в базе
     cur.execute("SELECT * FROM usersbooks")
     all_users = cur.fetchall()
-    print(f"Все пользователи в базе: {all_users}")
+    print(f"Все пользователи в базе: {[dict(u) for u in all_users]}")
     
-    cur.execute("SELECT * FROM usersbooks WHERE login=%s", (login,))
+    cur.execute("SELECT * FROM usersbooks WHERE login=?", (login,))
     user = cur.fetchone()
     
-    print(f"Найден пользователь: {user}")
-    
     if user:
+        user = dict(user)  # Преобразуем Row в dict
+        print(f"Найден пользователь: {user}")
         print(f"Хеш пароля в базе: {user['password']}")
         print(f"Длина хеша: {len(user['password'])}")
     
@@ -121,7 +121,6 @@ def rgz_login():
 
     # Проверяем пароль
     print(f"Проверяем пароль '{password}' с хешем...")
-    from werkzeug.security import check_password_hash
     
     # ДЛЯ ОТЛАДКИ - также сгенерируем хеш для введённого пароля
     test_hash = generate_password_hash(password)
@@ -139,6 +138,7 @@ def rgz_login():
     session['login'] = user['login']
     session['role'] = user['role']
     return redirect('/rgz/')
+
 # ---------------- ВЫХОД ----------------
 @RGZ.route('/rgz/logout')
 def rgz_logout():
@@ -156,9 +156,12 @@ def rgz_admin():
     books = cur.fetchall()
     db_close(conn, cur)
 
+    # Преобразуем Row в dict для шаблона
+    books_list = [dict(book) for book in books]
+    
     return render_template(
         'RGZ/rgz_admin.html',
-        books=books,
+        books=books_list,
         login=session.get('login')
     )
 
@@ -184,10 +187,9 @@ def api_add_book():
     try:
         cur.execute("""
             INSERT INTO books (title, author, pages, publisher, cover)
-            VALUES (%s, %s, %s, %s, %s)
-            RETURNING id
+            VALUES (?, ?, ?, ?, ?)
         """, (data['title'], data['author'], pages, data.get('publisher', ''), data.get('cover', '/static/RGZ/default-book.png')))
-        book_id = cur.fetchone()['id']
+        book_id = cur.lastrowid  # Получаем ID последней вставленной записи
         db_close(conn, cur)
         return jsonify({'success': True, 'id': book_id})
     except Exception as e:
@@ -203,7 +205,7 @@ def api_admin_book(book_id):
     
     if request.method == 'DELETE':
         try:
-            cur.execute("DELETE FROM books WHERE id=%s", (book_id,))
+            cur.execute("DELETE FROM books WHERE id=?", (book_id,))
             db_close(conn, cur)
             return jsonify({'success': True})
         except Exception as e:
@@ -226,8 +228,8 @@ def api_admin_book(book_id):
         try:
             cur.execute("""
                 UPDATE books 
-                SET title=%s, author=%s, pages=%s, publisher=%s, cover=%s
-                WHERE id=%s
+                SET title=?, author=?, pages=?, publisher=?, cover=?
+                WHERE id=?
             """, (data['title'], data['author'], pages, data.get('publisher', ''), 
                   data.get('cover', '/static/RGZ/default-book.png'), book_id))
             db_close(conn, cur)
@@ -248,12 +250,13 @@ def init_admin():
     
     # Создаем админа (пароль: admin123)
     hashed_password = generate_password_hash('admin123')
-    cur.execute("INSERT INTO usersbooks (login, password, role) VALUES (%s, %s, 'admin')", 
+    cur.execute("INSERT INTO usersbooks (login, password, role) VALUES (?, ?, 'admin')", 
                 ('admin', hashed_password))
     
     db_close(conn, cur)
     return "Админ создан: login: admin, password: admin123"
 
+# ---------------- ФОРМЫ ДЛЯ АДМИНА (HTML формы) ----------------
 @RGZ.route('/rgz/admin/books/add', methods=['GET', 'POST'])
 def admin_add_book():
     if session.get('role') != 'admin':
@@ -269,7 +272,7 @@ def admin_add_book():
         conn, cur = db_connect()
         cur.execute("""
             INSERT INTO books (title, author, pages, publisher, cover)
-            VALUES (%s, %s, %s, %s, %s)
+            VALUES (?, ?, ?, ?, ?)
         """, (title, author, pages, publisher, cover))
         db_close(conn, cur)
 
@@ -293,19 +296,21 @@ def admin_edit_book(book_id):
 
         cur.execute("""
             UPDATE books
-            SET title=%s, author=%s, pages=%s, publisher=%s, cover=%s
-            WHERE id=%s
+            SET title=?, author=?, pages=?, publisher=?, cover=?
+            WHERE id=?
         """, (title, author, pages, publisher, cover, book_id))
         db_close(conn, cur)
 
         return redirect('/rgz/admin')
 
-    cur.execute("SELECT * FROM books WHERE id=%s", (book_id,))
+    cur.execute("SELECT * FROM books WHERE id=?", (book_id,))
     book = cur.fetchone()
     db_close(conn, cur)
 
+    if book:
+        book = dict(book)  # Преобразуем Row в dict
+    
     return render_template('RGZ/rgz_book_form.html', book=book)
-
 
 @RGZ.route('/rgz/admin/books/delete/<int:book_id>')
 def admin_delete_book(book_id):
@@ -313,7 +318,36 @@ def admin_delete_book(book_id):
         return redirect('/rgz/login')
 
     conn, cur = db_connect()
-    cur.execute("DELETE FROM books WHERE id=%s", (book_id,))
+    cur.execute("DELETE FROM books WHERE id=?", (book_id,))
     db_close(conn, cur)
 
     return redirect('/rgz/admin')
+
+# ---------------- ТЕСТОВЫЙ ЭНДПОИНТ ----------------
+@RGZ.route('/rgz/test')
+def test_db():
+    """Тестовый эндпоинт для проверки базы данных"""
+    conn, cur = db_connect()
+    
+    # Проверяем usersbooks
+    cur.execute("SELECT COUNT(*) as user_count FROM usersbooks")
+    user_count = cur.fetchone()['user_count']
+    
+    # Проверяем books
+    cur.execute("SELECT COUNT(*) as book_count FROM books")
+    book_count = cur.fetchone()['book_count']
+    
+    # Показываем несколько книг
+    cur.execute("SELECT title, author FROM books LIMIT 3")
+    sample_books = cur.fetchall()
+    
+    db_close(conn, cur)
+    
+    result = {
+        "status": "ok",
+        "users": user_count,
+        "books": book_count,
+        "sample_books": [dict(book) for book in sample_books]
+    }
+    
+    return jsonify(result)
