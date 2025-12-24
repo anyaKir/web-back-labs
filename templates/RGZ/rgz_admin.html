@@ -1,20 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Администрирование</title>
+    <title>Админ-панель</title>
 </head>
 <body>
 
-<h2>Администрирование</h2>
-<p>Администратор может добавлять, редактировать и удалять книги (реализуется через API).</p>
+<h2>👑 Администратор: {{ login }}</h2>
 
-<a href="/rgz/">Назад</a>
+<p>
+    <a href="/rgz/admin/books/add">➕ Добавить книгу</a> |
+    <a href="/rgz/">← Назад</a> |
+    <a href="/rgz/logout">Выйти</a>
+</p>
 
-<footer>
 <hr>
-Кирдячкина Анна Константиновна, ФБИ-32, 2025
-</footer>
+
+{% for book in books %}
+<div style="margin-bottom:10px">
+    <b>{{ book.title }}</b> — {{ book.author }}
+    ({{ book.pages }} стр.)
+    <a href="/rgz/admin/books/edit/{{ book.id }}">✏️</a>
+    <a href="/rgz/admin/books/delete/{{ book.id }}"
+       onclick="return confirm('Удалить книгу?')">❌</a>
+</div>
+{% endfor %}
 
 </body>
 </html>

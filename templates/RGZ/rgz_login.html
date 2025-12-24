@@ -1,22 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Вход</title>
+    <title>Вход для администратора</title>
+    <link rel="stylesheet" href="/static/rgz/style.css">
 </head>
 <body>
 
-<h2>Вход</h2>
+<div class="login-form">
+    <h2>🔐 Вход для администратора</h2>
+    
+    {% if error %}
+    <div class="error">
+        ⚠️ {{ error }}
+    </div>
+    {% endif %}
+    
+    <form method="post">
+        <input type="text" name="login" placeholder="Логин" required>
+        <input type="password" name="password" placeholder="Пароль" required>
+        <button type="submit">Войти</button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 20px;">
+        <a href="/rgz/">← Назад к каталогу</a>
+    </p>
+    
+    <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+        <p style="margin: 0; font-size: 14px; color: #666;">
+            <strong>Информация:</strong><br>
+            • Только администраторы могут входить в систему<br>
+            • Обычные пользователи могут только просматривать книги<br>
+            • Тестовый админ: login: <strong>admin</strong>, password: <strong>admin123</strong>
+        </p>
+    </div>
+</div>
 
-{% if error %}
-<p style="color:red">{{ error }}</p>
-{% endif %}
-
-<form method="post">
-    <input name="login" placeholder="Логин"><br>
-    <input type="password" name="password" placeholder="Пароль"><br>
-    <button>Войти</button>
-</form>
+<footer>
+    <hr>
+    <p>Кирдячкина Анна Константиновна, ФБИ-32, 2025</p>
+</footer>
 
 </body>
 </html>

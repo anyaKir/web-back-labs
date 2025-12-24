@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if book %}Редактировать{% else %}Добавить{% endif %} книгу</title>
+</head>
+<body>
+
+<h2>
+{% if book %}
+✏️ Редактировать книгу
+{% else %}
+➕ Добавить книгу
+{% endif %}
+</h2>
+
+<form method="post">
+    <p>
+        <input name="title" placeholder="Название"
+               value="{{ book.title if book else '' }}" required>
+    </p>
+    <p>
+        <input name="author" placeholder="Автор"
+               value="{{ book.author if book else '' }}" required>
+    </p>
+    <p>
+        <input type="number" name="pages" placeholder="Страниц"
+               value="{{ book.pages if book else '' }}" required>
+    </p>
+    <p>
+        <input name="publisher" placeholder="Издательство"
+               value="{{ book.publisher if book else '' }}">
+    </p>
+    <p>
+        <input name="cover" placeholder="/static/RGZ/covers/book101.png"
+               value="{{ book.cover if book else '' }}">
+    </p>
+
+    <button type="submit">💾 Сохранить</button>
+</form>
+
+<p>
+    <a href="/rgz/admin">← Назад</a>
+</p>
+
+</body>
+</html>
