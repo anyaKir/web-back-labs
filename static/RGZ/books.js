@@ -60,9 +60,9 @@ function loadBooks(reset = false) {
                     
                     booksContainer.innerHTML += `
                     <div class="book-card" id="book-${b.id}">
-                        <img src="${b.cover || '/static/rgz/default-book.png'}" 
+                        <img src="${b.cover || '/static/RGZ/default-book.png'}" 
                              alt="${b.title}" 
-                             onerror="this.src='/static/rgz/default-book.png'">
+                             onerror="this.src='/static/RGZ/default-book.png'">
                         <h3>${b.title}</h3>
                         <p><strong>👤 Автор:</strong> ${b.author}</p>
                         <p><strong>🏢 Издательство:</strong> ${b.publisher || 'Не указано'}</p>
@@ -126,7 +126,7 @@ function addBook() {
     }
     
     const publisher = prompt('Введите издательство (необязательно):') || '';
-    const cover = prompt('Введите URL обложки (необязательно):') || '/static/rgz/default-book.png';
+    const cover = prompt('Введите URL обложки (необязательно):') || '/static/RGZ/default-book.png';
     
     fetch('/rgz/api/admin/books', {
         method: 'POST',
@@ -164,7 +164,7 @@ function editBook(bookId) {
     }
     
     const publisher = prompt('Новое издательство:', bookElement.querySelector('p:nth-child(4)').textContent.replace('🏢 Издательство: ', '')) || '';
-    const cover = prompt('Новый URL обложки:', bookElement.querySelector('img').src) || '/static/rgz/default-book.png';
+    const cover = prompt('Новый URL обложки:', bookElement.querySelector('img').src) || '/static/RGZ/default-book.png';
     
     fetch(`/rgz/api/admin/books/${bookId}`, {
         method: 'PUT',

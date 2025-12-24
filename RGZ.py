@@ -240,6 +240,157 @@ def rgz_admin():
         print(f"ERROR в rgz_admin: {e}")
         return "Ошибка загрузки админ-панели"
 
+# ---------------- ДОБАВЛЕНИЕ КНИГИ ----------------
+@RGZ.route('/rgz/admin/books/add', methods=['GET', 'POST'])
+def rgz_add_book():
+    if session.get('role') != 'admin':
+        return redirect('/rgz/login')
+    
+    if request.method == 'GET':
+        return render_template('RGZ/rgz_book_form.html')
+    
+    # Обработка POST запроса
+    try:
+        title = request.form.get('title')
+        author = request.form.get('author')
+        pages = request.form.get('pages')
+        publisher = request.form.get('publisher')
+        cover = request.form.get('cover')
+        
+        if not title or not author or not pages:
+            return "Заполните обязательные поля", 400
+        
+        conn, cur, db_type = db_connect()
+        cur.execute(
+            "INSERT INTO books (title, author, pages, publisher, cover) VALUES (?, ?, ?, ?, ?)",
+            (title, author, int(pages), publisher or None, cover or '/static/RGZ/default-book.png')
+        )
+        conn.commit()
+        db_close(conn, cur)
+        
+        return redirect('/rgz/admin')
+        
+    except Exception as e:
+        print(f"ERROR в rgz_add_book: {e}")
+        return f"Ошибка: {e}", 500
+
+# ---------------- РЕДАКТИРОВАНИЕ КНИГИ ----------------
+@RGZ.route('/rgz/admin/books/edit/<int:book_id>', methods=['GET', 'POST'])
+def rgz_edit_book(book_id):
+    if session.get('role') != 'admin':
+        return redirect('/rgz/login')
+    
+    try:
+        conn, cur, db_type = db_connect()
+        
+        if request.method == 'GET':
+            cur.execute("SELECT * FROM books WHERE id = ?", (book_id,))
+            book = cur.fetchone()
+            db_close(conn, cur)
+            
+            if not book:
+                return "Книга не найдена", 404
+            
+            return render_template('RGZ/rgz_book_form.html', book=dict(book))
+        
+        # Обработка POST запроса
+        title = request.form.get('title')
+        author = request.form.get('author')
+        pages = request.form.get('pages')
+        publisher = request.form.get('publisher')
+        cover = request.form.get('cover')
+        
+        if not title or not author or not pages:
+            return "Заполните обязательные поля", 400
+        
+        cur.execute("""
+            UPDATE books 
+            SET title = ?, author = ?, pages = ?, publisher = ?, cover = ?
+            WHERE id = ?
+        """, (title, author, int(pages), publisher or None, cover or '/static/RGZ/default-book.png', book_id))
+        
+        conn.commit()
+        db_close(conn, cur)
+        
+        return redirect('/rgz/admin')
+        
+    except Exception as e:
+        print(f"ERROR в rgz_edit_book: {e}")
+        return f"Ошибка: {e}", 500
+
+# ---------------- УДАЛЕНИЕ КНИГИ ----------------
+@RGZ.route('/rgz/admin/books/delete/<int:book_id>')
+def rgz_delete_book(book_id):
+    if session.get('role') != 'admin':
+        return redirect('/rgz/login')
+    
+    try:
+        conn, cur, db_type = db_connect()
+        cur.execute("DELETE FROM books WHERE id = ?", (book_id,))
+        conn.commit()
+        db_close(conn, cur)
+        
+        return redirect('/rgz/admin')
+        
+    except Exception as e:
+        print(f"ERROR в rgz_delete_book: {e}")
+        return f"Ошибка: {e}", 500
+
+# ---------------- ЗАГРУЗКА КНИГ ИЗ SQL ФАЙЛА ----------------
+@RGZ.route('/rgz/load_books')
+def load_books_from_sql():
+    """Загрузка книг из SQL файла (доступно всем для инициализации)"""
+    try:
+        conn, cur, db_type = db_connect()
+        
+        # Создаем таблицу если её нет
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS books (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                author TEXT NOT NULL,
+                pages INTEGER NOT NULL,
+                publisher TEXT,
+                cover TEXT DEFAULT '/static/RGZ/default-book.png'
+            )
+        ''')
+        
+        # Загружаем данные
+        books_data = [
+            ('Преступление и наказание','Федор Достоевский',671,'Эксмо','/static/RGZ/covers/book1.png'),
+            ('Идиот','Федор Достоевский',640,'Азбука','/static/RGZ/covers/book2.png'),
+            ('Братья Карамазовы','Федор Достоевский',824,'Эксмо','/static/RGZ/covers/book3.png'),
+            ('Война и мир','Лев Толстой',1225,'АСТ','/static/RGZ/covers/book4.png'),
+            ('Анна Каренина','Лев Толстой',864,'Азбука','/static/RGZ/covers/book5.png'),
+            ('Мастер и Маргарита','Михаил Булгаков',480,'Эксмо','/static/RGZ/covers/book6.png'),
+            ('Белая гвардия','Михаил Булгаков',384,'АСТ','/static/RGZ/covers/book7.png'),
+            ('Евгений Онегин','Александр Пушкин',320,'Эксмо','/static/RGZ/covers/book8.png'),
+            ('Капитанская дочка','Александр Пушкин',256,'АСТ','/static/RGZ/covers/book9.png'),
+            ('Герой нашего времени','Михаил Лермонтов',320,'Азбука','/static/RGZ/covers/book10.png')
+        ]
+        
+        # Добавляем только первые 10 книг для теста
+        for book in books_data:
+            title, author, pages, publisher, cover = book
+            cur.execute("""
+                INSERT OR IGNORE INTO books (title, author, pages, publisher, cover) 
+                VALUES (?, ?, ?, ?, ?)
+            """, (title, author, pages, publisher, cover))
+        
+        conn.commit()
+        
+        # Проверяем сколько книг загружено
+        cur.execute("SELECT COUNT(*) FROM books")
+        count = cur.fetchone()[0]
+        
+        db_close(conn, cur)
+        
+        return f"Успешно загружено {count} книг! <a href='/rgz/'>Вернуться на главную</a>"
+        
+    except Exception as e:
+        print(f"ERROR в load_books_from_sql: {e}")
+        return f"Ошибка: {e}"
+
 # ---------------- ТЕСТОВЫЕ ЭНДПОИНТЫ ----------------
 @RGZ.route('/rgz/debug')
 def debug():
@@ -291,7 +442,7 @@ def simple_books():
 # ---------------- ИНИЦИАЛИЗАЦИЯ БАЗЫ ----------------
 @RGZ.route('/rgz/init')
 def init_db():
-    """Инициализация базы данных"""
+    """Инициализация базы данных (доступно всем)"""
     try:
         conn, cur, db_type = db_connect()
         
@@ -320,8 +471,7 @@ def init_db():
         
         # Добавляем администратора с scrypt хешем
         hashed_password = generate_password_hash('admin123', method='scrypt')
-        cur.execute("DELETE FROM usersbooks WHERE login='admin'")
-        cur.execute("INSERT INTO usersbooks (login, password, role) VALUES (?, ?, 'admin')", 
+        cur.execute("INSERT OR IGNORE INTO usersbooks (login, password, role) VALUES (?, ?, 'admin')", 
                    ('admin', hashed_password))
         
         # Проверяем книги
@@ -331,7 +481,12 @@ def init_db():
         conn.commit()
         db_close(conn, cur)
         
-        return f"База инициализирована. Книг: {count}. Админ: admin/admin123"
+        return f"""
+        <h2>База данных инициализирована!</h2>
+        <p>Книг в базе: {count}</p>
+        <p>Администратор создан: login: <strong>admin</strong>, password: <strong>admin123</strong></p>
+        <p><a href="/rgz/">На главную</a> | <a href="/rgz/load_books">Загрузить книги</a></p>
+        """
         
     except Exception as e:
         return f"Ошибка инициализации: {e}"
