@@ -9,11 +9,9 @@
 
 <div class="user-info">
     {% if login and role == 'admin' %}
-        <p style="float: left; margin: 0;">
-            👑 <strong>Администратор: {{ login }}</strong>
-        </p>
-        <p style="float: right; margin: 0;">
-            <a href="/rgz/admin">Админ-панель</a> |
+        <p style="float:left;">👑 Администратор: {{ login }}</p>
+        <p style="float:right;">
+            <a href="/rgz/admin">Админка</a> |
             <a href="/rgz/logout">Выйти</a>
         </p>
         <div style="clear: both;"></div>
@@ -21,46 +19,40 @@
         <div class="nav-links">
             <a href="/rgz/login">Вход для администратора</a>
         </div>
-        <p style="text-align: center; color: #666; font-size: 14px; margin-top: 5px;">
-            Все посетители могут просматривать и фильтровать книги
-        </p>
     {% endif %}
 </div>
 
 <h1>📚 Каталог книг</h1>
 
 <div class="filters">
-    <input id="title" placeholder="Название книги">
+    <input id="title" placeholder="Название">
     <input id="author" placeholder="Автор">
     <input id="publisher" placeholder="Издательство">
-    <input id="pages_from" type="number" placeholder="Стр. от" min="1">
-    <input id="pages_to" type="number" placeholder="Стр. до" min="1">
-    
+    <input id="pages_from" type="number" placeholder="Стр. от">
+    <input id="pages_to" type="number" placeholder="Стр. до">
+
     <select id="sort">
-        <option value="title">По названию (А-Я)</option>
-        <option value="title DESC">По названию (Я-А)</option>
-        <option value="author">По автору (А-Я)</option>
-        <option value="author DESC">По автору (Я-А)</option>
-        <option value="pages">По страницам (возр.)</option>
-        <option value="pages DESC">По страницам (убыв.)</option>
-        <option value="publisher">По издательству (А-Я)</option>
-        <option value="publisher DESC">По издательству (Я-А)</option>
+        <option value="title">По названию</option>
+        <option value="title DESC">По названию ↓</option>
+        <option value="author">По автору</option>
+        <option value="pages">По страницам</option>
     </select>
-    
+
     <button onclick="loadBooks(true)">🔍 Поиск</button>
-    <button onclick="resetFilters()">🔄 Сбросить</button>
+    <button onclick="resetFilters()">🔄 Сброс</button>
 </div>
 
 <div id="books" class="books-grid"></div>
 
-<button class="load-more-btn" onclick="loadBooks()">📖 Показать ещё 20 книг</button>
+<button class="load-more-btn" onclick="loadBooks()">📖 Показать ещё</button>
 
 <footer>
     <hr>
     <p>Кирдячкина Анна Константиновна, ФБИ-32, 2025</p>
 </footer>
 
-<script src="/static/rgz/books.js"></script>
+<!-- 🔥 ВОТ ЭТО ГЛАВНОЕ -->
+<script src="{{ url_for('static', filename='RGZ/books.js') }}"></script>
+
 </body>
 </html>
-
