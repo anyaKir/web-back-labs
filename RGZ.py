@@ -343,37 +343,42 @@ def load_books_from_sql():
     try:
         conn, cur, db_type = db_connect()
         
-        # Создаем таблицу если её нет
-        cur.execute('''
-            CREATE TABLE IF NOT EXISTS books (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                author TEXT NOT NULL,
-                pages INTEGER NOT NULL,
-                publisher TEXT,
-                cover TEXT DEFAULT '/static/RGZ/default-book.png'
-            )
-        ''')
+        # Сначала проверяем, есть ли уже книги
+        cur.execute("SELECT COUNT(*) FROM books")
+        existing_count = cur.fetchone()[0]
+        
+        if existing_count > 0:
+            return f"""
+            <h2>В базе уже есть {existing_count} книг!</h2>
+            <p>Если хотите перезагрузить, сначала очистите таблицу:</p>
+            <p><a href="/rgz/cleanup">Удалить дубликаты</a> | 
+               <a href="/rgz/clear_books">Очистить все книги</a> | 
+               <a href="/rgz/">На главную</a></p>
+            """
         
         # Загружаем данные
         books_data = [
-            ('Преступление и наказание','Федор Достоевский',671,'Эксмо','/static/RGZ/covers/book1.png'),
-            ('Идиот','Федор Достоевский',640,'Азбука','/static/RGZ/covers/book2.png'),
-            ('Братья Карамазовы','Федор Достоевский',824,'Эксмо','/static/RGZ/covers/book3.png'),
-            ('Война и мир','Лев Толстой',1225,'АСТ','/static/RGZ/covers/book4.png'),
-            ('Анна Каренина','Лев Толстой',864,'Азбука','/static/RGZ/covers/book5.png'),
-            ('Мастер и Маргарита','Михаил Булгаков',480,'Эксмо','/static/RGZ/covers/book6.png'),
-            ('Белая гвардия','Михаил Булгаков',384,'АСТ','/static/RGZ/covers/book7.png'),
-            ('Евгений Онегин','Александр Пушкин',320,'Эксмо','/static/RGZ/covers/book8.png'),
-            ('Капитанская дочка','Александр Пушкин',256,'АСТ','/static/RGZ/covers/book9.png'),
-            ('Герой нашего времени','Михаил Лермонтов',320,'Азбука','/static/RGZ/covers/book10.png')
+            ('Преступление и наказание','Федор Достоевский',671,'Эксмо','covers/book1.png'),
+            ('Идиот','Федор Достоевский',640,'Азбука','covers/book2.png'),
+            ('Братья Карамазовы','Федор Достоевский',824,'Эксмо','covers/book3.png'),
+            ('Война и мир','Лев Толстой',1225,'АСТ','covers/book4.png'),
+            ('Анна Каренина','Лев Толстой',864,'Азбука','covers/book5.png'),
+            ('Мастер и Маргарита','Михаил Булгаков',480,'Эксмо','covers/book6.png'),
+            ('Белая гвардия','Михаил Булгаков',384,'АСТ','covers/book7.png'),
+            ('Евгений Онегин','Александр Пушкин',320,'Эксмо','covers/book8.png'),
+            ('Капитанская дочка','Александр Пушкин',256,'АСТ','covers/book9.png'),
+            ('Герой нашего времени','Михаил Лермонтов',320,'Азбука','covers/book10.png'),
+            ('Мёртвые души','Николай Гоголь',368,'Эксмо','covers/book11.png'),
+            ('Ревизор','Николай Гоголь',192,'АСТ','covers/book12.png'),
+            ('Обломов','Иван Гончаров',576,'Азбука','covers/book13.png'),
+            ('Отцы и дети','Иван Тургенев',352,'Азбука','covers/book14.png'),
+            # Добавьте остальные книги здесь...
         ]
         
-        # Добавляем только первые 10 книг для теста
         for book in books_data:
             title, author, pages, publisher, cover = book
             cur.execute("""
-                INSERT OR IGNORE INTO books (title, author, pages, publisher, cover) 
+                INSERT INTO books (title, author, pages, publisher, cover) 
                 VALUES (?, ?, ?, ?, ?)
             """, (title, author, pages, publisher, cover))
         
@@ -490,3 +495,53 @@ def init_db():
         
     except Exception as e:
         return f"Ошибка инициализации: {e}"
+    
+@RGZ.route('/rgz/cleanup')
+def cleanup_duplicates():
+    """Очистка дубликатов книг"""
+    try:
+        conn, cur, db_type = db_connect()
+        
+        # Удаляем дубликаты (оставляем первую запись)
+        cur.execute("""
+            DELETE FROM books 
+            WHERE id NOT IN (
+                SELECT MIN(id) 
+                FROM books 
+                GROUP BY title, author, pages
+            )
+        """)
+        
+        # Пересчитываем ID
+        cur.execute("DELETE FROM sqlite_sequence WHERE name='books'")
+        
+        conn.commit()
+        
+        # Проверяем сколько книг осталось
+        cur.execute("SELECT COUNT(*) FROM books")
+        count = cur.fetchone()[0]
+        
+        db_close(conn, cur)
+        
+        return f"Дубликаты удалены! Осталось {count} уникальных книг. <a href='/rgz/'>На главную</a>"
+        
+    except Exception as e:
+        return f"Ошибка: {e}"
+    
+    
+@RGZ.route('/rgz/clear_books')
+def clear_books():
+    """Полная очистка таблицы книг"""
+    try:
+        conn, cur, db_type = db_connect()
+        
+        cur.execute("DELETE FROM books")
+        cur.execute("DELETE FROM sqlite_sequence WHERE name='books'")
+        
+        conn.commit()
+        db_close(conn, cur)
+        
+        return "Все книги удалены! <a href='/rgz/load_books'>Загрузить снова</a>"
+        
+    except Exception as e:
+        return f"Ошибка: {e}"
