@@ -149,8 +149,18 @@ def rgz_logout():
 @RGZ.route('/rgz/admin')
 def rgz_admin():
     if session.get('role') != 'admin':
-        return redirect('/rgz/')
-    return render_template('RGZ/rgz_admin.html')
+        return redirect('/rgz/login')
+
+    conn, cur = db_connect()
+    cur.execute("SELECT * FROM books ORDER BY id")
+    books = cur.fetchall()
+    db_close(conn, cur)
+
+    return render_template(
+        'RGZ/rgz_admin.html',
+        books=books,
+        login=session.get('login')
+    )
 
 # ---------------- API для админа (CRUD книг) ----------------
 @RGZ.route('/rgz/api/admin/books', methods=['POST'])
@@ -243,3 +253,67 @@ def init_admin():
     
     db_close(conn, cur)
     return "Админ создан: login: admin, password: admin123"
+
+@RGZ.route('/rgz/admin/books/add', methods=['GET', 'POST'])
+def admin_add_book():
+    if session.get('role') != 'admin':
+        return redirect('/rgz/login')
+
+    if request.method == 'POST':
+        title = request.form['title']
+        author = request.form['author']
+        pages = request.form['pages']
+        publisher = request.form['publisher']
+        cover = request.form['cover']
+
+        conn, cur = db_connect()
+        cur.execute("""
+            INSERT INTO books (title, author, pages, publisher, cover)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (title, author, pages, publisher, cover))
+        db_close(conn, cur)
+
+        return redirect('/rgz/admin')
+
+    return render_template('RGZ/rgz_book_form.html', book=None)
+
+@RGZ.route('/rgz/admin/books/edit/<int:book_id>', methods=['GET', 'POST'])
+def admin_edit_book(book_id):
+    if session.get('role') != 'admin':
+        return redirect('/rgz/login')
+
+    conn, cur = db_connect()
+
+    if request.method == 'POST':
+        title = request.form['title']
+        author = request.form['author']
+        pages = request.form['pages']
+        publisher = request.form['publisher']
+        cover = request.form['cover']
+
+        cur.execute("""
+            UPDATE books
+            SET title=%s, author=%s, pages=%s, publisher=%s, cover=%s
+            WHERE id=%s
+        """, (title, author, pages, publisher, cover, book_id))
+        db_close(conn, cur)
+
+        return redirect('/rgz/admin')
+
+    cur.execute("SELECT * FROM books WHERE id=%s", (book_id,))
+    book = cur.fetchone()
+    db_close(conn, cur)
+
+    return render_template('RGZ/rgz_book_form.html', book=book)
+
+
+@RGZ.route('/rgz/admin/books/delete/<int:book_id>')
+def admin_delete_book(book_id):
+    if session.get('role') != 'admin':
+        return redirect('/rgz/login')
+
+    conn, cur = db_connect()
+    cur.execute("DELETE FROM books WHERE id=%s", (book_id,))
+    db_close(conn, cur)
+
+    return redirect('/rgz/admin')
