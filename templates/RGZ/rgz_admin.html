@@ -535,11 +535,12 @@
                 <tbody>
                     {% for book in books %}
                     <tr>
-                        <td>
-                            <img src="{{ book.cover or '/static/RGZ/default-book.png' }}" 
-                                 alt="{{ book.title }}" 
-                                 class="book-cover-small"
-                                 onerror="this.src='/static/RGZ/default-book.png'">
+                       <td>
+                            {% if book.cover %}
+                                <img src="{{ book.cover }}" class="book-cover-small" alt="{{ book.title }}">
+                            {% else %}
+                                <div style="color:#999;font-size:12px;">Нет обложки</div>
+                            {% endif %}
                         </td>
                         <td><strong>{{ book.title }}</strong></td>
                         <td>{{ book.author }}</td>
@@ -570,18 +571,6 @@
             </div>
             {% endif %}
         </div>
-
-        <!-- Пагинация (если книг много) -->
-        {% if books|length > 10 %}
-        <div class="pagination">
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn">...</button>
-            <button class="page-btn">10</button>
-        </div>
-        {% endif %}
-    </div>
 
     <!-- Модальное окно для добавления книги -->
     <div id="addModal" class="modal-overlay" onclick="closeAddModal(event)">

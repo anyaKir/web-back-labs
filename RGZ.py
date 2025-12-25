@@ -254,8 +254,17 @@ def rgz_add_book():
         
         conn, cur, db_type = db_connect()
         cur.execute(
-            "INSERT INTO books (title, author, pages, publisher, cover) VALUES (?, ?, ?, ?, ?)",
-            (title, author, int(pages), publisher or None, cover or '/static/RGZ/default-book.png')
+            """
+            INSERT INTO books (title, author, pages, publisher, cover)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                title,
+                author,
+                int(pages),
+                publisher or None,
+                cover if cover else None   # ← ВАЖНО
+            )
         )
         conn.commit()
         db_close(conn, cur)

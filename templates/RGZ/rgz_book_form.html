@@ -32,6 +32,18 @@
             cursor: pointer;
             font-size: 16px;
         }
+        .cover-preview {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .cover-preview img {
+            max-height: 200px;
+            border-radius: 8px;
+        }
+        .hint {
+            font-size: 13px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -45,26 +57,46 @@
 </h2>
 
 <form method="post">
+
     <p>
         <input name="title" placeholder="Название"
                value="{{ book.title if book else '' }}" required>
     </p>
+
     <p>
         <input name="author" placeholder="Автор"
                value="{{ book.author if book else '' }}" required>
     </p>
+
     <p>
         <input type="number" name="pages" placeholder="Страниц"
                value="{{ book.pages if book else '' }}" required>
     </p>
+
     <p>
         <input name="publisher" placeholder="Издательство"
                value="{{ book.publisher if book else '' }}">
     </p>
+
+    <!-- 🔹 ОБЛОЖКА КНИГИ (URL) -->
     <p>
-        <input name="cover" placeholder="/static/RGZ/covers/book101.png"
+        <label>Обложка (URL)</label>
+        <input type="url"
+               name="cover"
+               placeholder="https://upload.wikimedia.org/..."
                value="{{ book.cover if book else '' }}">
+        <span class="hint">
+            Вставьте ссылку на изображение из интернета (Wikipedia, Ozon, Google)
+        </span>
     </p>
+
+    <!-- 🔹 ПРЕДПРОСМОТР ОБЛОЖКИ -->
+    {% if book and book.cover %}
+    <div class="cover-preview">
+        <p>Текущая обложка:</p>
+        <img src="{{ book.cover }}" alt="Обложка книги">
+    </div>
+    {% endif %}
 
     <button type="submit">💾 Сохранить</button>
 </form>
