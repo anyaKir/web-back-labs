@@ -28,19 +28,19 @@ function loadBooks(reset = false) {
             if (data.length === 0 && offset === 0) {
                 container.innerHTML =
                     `<div class="message">📚 Книги не найдены</div>`;
+                loading = false;
                 return;
             }
 
             data.forEach(b => {
-                let cover = b.cover || "/static/RGZ/default-book.png";
-                if (!cover.startsWith("/static/")) {
-                    cover = "/static/RGZ/" + cover;
-                }
+                const coverHtml = b.cover
+                    ? `<img src="${b.cover}" class="book-cover" alt="${b.title}">`
+                    : `<div class="no-cover">Нет обложки</div>`;
 
                 const card = document.createElement("div");
                 card.className = "book-card";
                 card.innerHTML = `
-                    <img src="${cover}" onerror="this.src='/static/RGZ/default-book.png'">
+                    ${coverHtml}
                     <h3>${b.title}</h3>
                     <p><strong>Автор:</strong> ${b.author}</p>
                     <p><strong>Издательство:</strong> ${b.publisher || "—"}</p>
