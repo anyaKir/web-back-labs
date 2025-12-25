@@ -203,14 +203,6 @@ def rgz_login():
         print(f"ERROR в rgz_login: {e}")
         return render_template('RGZ/rgz_login.html', error='Ошибка сервера')
 
-# ---------------- ПРОСТОЙ ВХОД ДЛЯ ТЕСТИРОВАНИЯ ----------------
-@RGZ.route('/rgz/force_login')
-def force_login():
-    """Принудительный вход для тестирования (удалить потом)"""
-    session['login'] = 'admin'
-    session['role'] = 'admin'
-    return redirect('/rgz/')
-
 # ---------------- ВЫХОД ----------------
 @RGZ.route('/rgz/logout')
 def rgz_logout():
