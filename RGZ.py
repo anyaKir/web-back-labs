@@ -308,7 +308,7 @@ def rgz_edit_book(book_id):
             UPDATE books 
             SET title = ?, author = ?, pages = ?, publisher = ?, cover = ?
             WHERE id = ?
-        """, (title, author, int(pages), publisher or None, cover or '/static/RGZ/default-book.png', book_id))
+        """, (title, author, int(pages), publisher or None, cover if cover else None, book_id))
         
         conn.commit()
         db_close(conn, cur)
