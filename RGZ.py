@@ -337,66 +337,6 @@ def rgz_delete_book(book_id):
         print(f"ERROR в rgz_delete_book: {e}")
         return f"Ошибка: {e}", 500
 
-# ---------------- ЗАГРУЗКА КНИГ ИЗ SQL ФАЙЛА ----------------
-@RGZ.route('/rgz/load_books')
-def load_books_from_sql():
-    """Загрузка книг из SQL файла (доступно всем для инициализации)"""
-    try:
-        conn, cur, db_type = db_connect()
-        
-        # Сначала проверяем, есть ли уже книги
-        cur.execute("SELECT COUNT(*) FROM books")
-        existing_count = cur.fetchone()[0]
-        
-        if existing_count > 0:
-            return f"""
-            <h2>В базе уже есть {existing_count} книг!</h2>
-            <p>Если хотите перезагрузить, сначала очистите таблицу:</p>
-            <p><a href="/rgz/cleanup">Удалить дубликаты</a> | 
-               <a href="/rgz/clear_books">Очистить все книги</a> | 
-               <a href="/rgz/">На главную</a></p>
-            """
-        
-        # Загружаем данные
-        books_data = [
-            ('Преступление и наказание','Федор Достоевский',671,'Эксмо','covers/book1.png'),
-            ('Идиот','Федор Достоевский',640,'Азбука','covers/book2.png'),
-            ('Братья Карамазовы','Федор Достоевский',824,'Эксмо','covers/book3.png'),
-            ('Война и мир','Лев Толстой',1225,'АСТ','covers/book4.png'),
-            ('Анна Каренина','Лев Толстой',864,'Азбука','covers/book5.png'),
-            ('Мастер и Маргарита','Михаил Булгаков',480,'Эксмо','covers/book6.png'),
-            ('Белая гвардия','Михаил Булгаков',384,'АСТ','covers/book7.png'),
-            ('Евгений Онегин','Александр Пушкин',320,'Эксмо','covers/book8.png'),
-            ('Капитанская дочка','Александр Пушкин',256,'АСТ','covers/book9.png'),
-            ('Герой нашего времени','Михаил Лермонтов',320,'Азбука','covers/book10.png'),
-            ('Мёртвые души','Николай Гоголь',368,'Эксмо','covers/book11.png'),
-            ('Ревизор','Николай Гоголь',192,'АСТ','covers/book12.png'),
-            ('Обломов','Иван Гончаров',576,'Азбука','covers/book13.png'),
-            ('Отцы и дети','Иван Тургенев',352,'Азбука','covers/book14.png'),
-            # Добавьте остальные книги здесь...
-        ]
-        
-        for book in books_data:
-            title, author, pages, publisher, cover = book
-            cur.execute("""
-                INSERT INTO books (title, author, pages, publisher, cover) 
-                VALUES (?, ?, ?, ?, ?)
-            """, (title, author, pages, publisher, cover))
-        
-        conn.commit()
-        
-        # Проверяем сколько книг загружено
-        cur.execute("SELECT COUNT(*) FROM books")
-        count = cur.fetchone()[0]
-        
-        db_close(conn, cur)
-        
-        return f"Успешно загружено {count} книг! <a href='/rgz/'>Вернуться на главную</a>"
-        
-    except Exception as e:
-        print(f"ERROR в load_books_from_sql: {e}")
-        return f"Ошибка: {e}"
-
 # ---------------- ТЕСТОВЫЕ ЭНДПОИНТЫ ----------------
 @RGZ.route('/rgz/debug')
 def debug():
