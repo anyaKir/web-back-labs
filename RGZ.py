@@ -280,41 +280,49 @@ def rgz_add_book():
 def rgz_edit_book(book_id):
     if session.get('role') != 'admin':
         return redirect('/rgz/login')
-    
+
     try:
         conn, cur, db_type = db_connect()
-        
+
         if request.method == 'GET':
             cur.execute("SELECT * FROM books WHERE id = ?", (book_id,))
             book = cur.fetchone()
             db_close(conn, cur)
-            
+
             if not book:
                 return "Книга не найдена", 404
-            
+
             return render_template('RGZ/rgz_book_form.html', book=dict(book))
-        
-        # Обработка POST запроса
+
+        # ---------------- POST ----------------
         title = request.form.get('title')
         author = request.form.get('author')
         pages = request.form.get('pages')
         publisher = request.form.get('publisher')
         cover = request.form.get('cover')
-        
+
         if not title or not author or not pages:
             return "Заполните обязательные поля", 400
-        
+
+        # Получаем текущее значение cover из базы
+        cur.execute("SELECT cover FROM books WHERE id = ?", (book_id,))
+        current_cover_row = cur.fetchone()
+        current_cover = current_cover_row[0] if current_cover_row else '/static/RGZ/default-book.png'
+
+        # Если пользователь не ввел новую обложку, оставляем старую
+        cover_to_save = cover.strip() if cover else current_cover
+
         cur.execute("""
             UPDATE books 
             SET title = ?, author = ?, pages = ?, publisher = ?, cover = ?
             WHERE id = ?
-        """, (title, author, int(pages), publisher or None, cover if cover else None, book_id))
-        
+        """, (title, author, int(pages), publisher or None, cover_to_save, book_id))
+
         conn.commit()
         db_close(conn, cur)
-        
+
         return redirect('/rgz/admin')
-        
+
     except Exception as e:
         print(f"ERROR в rgz_edit_book: {e}")
         return f"Ошибка: {e}", 500
