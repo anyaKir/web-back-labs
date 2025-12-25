@@ -336,20 +336,3 @@ def rgz_delete_book(book_id):
     except Exception as e:
         print(f"ERROR в rgz_delete_book: {e}")
         return f"Ошибка: {e}", 500
-    
-
-@RGZ.route('/rgz/simple_books')
-def simple_books():
-    """Простой вывод книг без JavaScript"""
-    try:
-        conn, cur, db_type = db_connect()
-        cur.execute("SELECT * FROM books LIMIT 20")
-        books = [dict(row) for row in cur.fetchall()]
-        db_close(conn, cur)
-        
-        return render_template('RGZ/simple_books.html', 
-                             books=books,
-                             login=session.get('login'),
-                             role=session.get('role'))
-    except Exception as e:
-        return f"Ошибка: {e}"
